@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Årsta Bilvård</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CarWashStation.styles.css" asp-append-version="true" />
+
+    <style>
+        :root {
+            --teal:        #3bbfbf;
+            --teal-dark:   #2a9a9a;
+            --teal-deeper: #1d7575;
+            --teal-light:  #e8f8f8;
+            --teal-mid:    #b2e4e4;
+            --navy:        #0d2b3e;
+            --navy-mid:    #1a3f57;
+            --navy-light:  #22536e;
+            --text-dark:   #0d2b3e;
+            --text-mid:    #3a5f72;
+            --text-muted:  #7aa3b5;
+            --bg-page:     #f4fbfb;
+            --border-col:  #cdeaea;
+
+            /* Modern Footer Palette (Preserved) */
+            --footer-bg:   #1a1714;
+            --rust:        #c0392b;
+            --rust-glow:   rgba(192,57,43,0.15);
+            --gold:        #b8963e;
+            --footer-border: rgba(255,255,255,0.07);
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-page);
+        }
+
+        /* ── Navbar ── */
+        .navbar-teal {
+            background: #ffffff;
+            border-bottom: 2px solid var(--border-col);
+            padding: 0.6rem 0;
+            transition: box-shadow 0.3s ease;
+        }
+        .navbar-teal.scrolled {
+            box-shadow: 0 4px 24px rgba(13, 43, 62, 0.08);
+        }
+
+        .navbar-brand-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .logo-icon-wrapper {
+            width: 54px; height: 54px;
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 16px rgba(59,191,191,0.25);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .navbar-brand-logo-container:hover .logo-icon-wrapper {
+            transform: scale(1.1) rotate(-8deg);
+            box-shadow: 0 12px 24px rgba(59,191,191,0.35);
+        }
+
+        .logo-text-group {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .logo-main-text {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--navy);
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+        .logo-sub-text {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--teal-dark);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .navbar-nav .nav-link {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-mid) !important;
+            padding: 0.4rem 0.9rem !important;
+            border-radius: 50px;
+            transition: background 0.18s ease, color 0.18s ease;
+        }
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            background: var(--teal-light);
+            color: var(--teal-deeper) !important;
+        }
+
+        .btn-booking {
+            background: var(--teal);
+            border: none;
+            color: #fff !important;
+            padding: 0.55rem 1.5rem;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 14px rgba(59,191,191,0.3);
+            transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+        }
+        .btn-booking:hover {
+            background: var(--teal-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59,191,191,0.4);
+        }
+
+        @@media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: #fff;
+                border: 1.5px solid var(--border-col);
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin-top: 0.75rem;
+            }
+        }
+
+        /* ── FOOTER (Modern Design) ── */
+        .site-footer-modern {
+            background: var(--footer-bg);
+            border-top: 3px solid var(--rust);
+            margin-top: 4rem;
+        }
+
+        .footer-main-modern {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3.5rem 1.25rem 2.5rem;
+            display: grid;
+            grid-template-columns: 1.8fr 1fr 1fr 1.4fr;
+            gap: 3rem;
+        }
+
+        @@media (max-width: 900px) {
+            .footer-main-modern { grid-template-columns: 1fr 1fr; gap: 2rem; }
+        }
+
+        @@media (max-width: 600px) {
+            .footer-main-modern { grid-template-columns: 1fr; }
+        }
+
+        .footer-section-label-modern {
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--rust);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-section-label-modern::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--footer-border);
+        }
+
+        .footer-brand-modern { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+
+        .footer-brand-icon-modern {
+            width: 38px; height: 38px;
+            background: var(--rust);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .footer-brand-name-modern {
+            font-family: 'Raleway', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .footer-brand-sub-modern {
+            font-size: 0.6rem;
+            letter-spacing: 0.16em;
+            color: var(--rust);
+            font-weight: 500;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .footer-tagline-modern {
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.45);
+            line-height: 1.75;
+            max-width: 240px;
+        }
+
+        .footer-links-modern { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; padding: 0; }
+
+        .footer-links-modern a {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.18s, gap 0.18s;
+        }
+
+        .footer-links-modern a:hover { color: #fff; gap: 0.65rem; }
+
+        .footer-links-modern a.highlight-modern { color: var(--gold); font-weight: 500; }
+
+        .hours-row-modern {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 0.65rem;
+        }
+
+        .hours-row-modern .day { }
+        .hours-row-modern .time { font-weight: 400; color: rgba(255,255,255,0.8); }
+        .hours-row-modern .closed { color: rgba(255,255,255,0.25); }
+
+        .contact-item-modern {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.85rem;
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.5;
+        }
+
+        .contact-item-modern i {
+            color: var(--gold);
+            font-size: 0.875rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .footer-bottom-modern {
+            border-top: 1px solid var(--footer-border);
+            padding: 1.25rem 1.5rem;
+        }
+
+        .footer-bottom-inner-modern {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .footer-copy-modern {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.25);
+        }
+
+        .footer-bottom-modern a {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.25);
+            text-decoration: none;
+            transition: color 0.18s;
+        }
+
+        .footer-bottom-modern a:hover { color: rgba(255,255,255,0.6); }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-teal sticky-top" id="mainNav">
+            <div class="container-fluid container-xl">
+                <a class="navbar-brand-logo-container" asp-area="" asp-controller="Home" asp-action="Index">
+                    <div class="logo-icon-wrapper">
+                        <i class="bi bi-droplet-fill"></i>
+                    </div>
+                    <div class="logo-text-group">
+                        <span class="logo-main-text">ÅRSTA</span>
+                        <span class="logo-sub-text">BILVÅRD</span>
+                    </div>
+                </a>
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between align-items-center">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Hem</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Services">Tjänster</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact">Kontakta oss</a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" style="color: var(--teal-dark) !important;"
+                                   asp-area="" asp-controller="Admin" asp-action="Index">Alla bokningar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" style="color: var(--teal-dark) !important;"
+                                   asp-area="" asp-controller="Admin" asp-action="ScheduleControl">Schema kontroll</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item d-flex align-items-center gap-2 mb-2 mb-lg-0">
+                                <span class="badge rounded-pill fw-normal py-2 px-3"
+                                      style="background: var(--teal-light); color: var(--teal-deeper); border: 1px solid var(--teal-mid);">
+                                    Inloggad som Admin
+                                </span>
+                                <form class="m-0" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                    <button type="submit" class="btn btn-link p-0 fw-bold text-decoration-none"
+                                            style="color: var(--teal-dark); font-size: 0.88rem;">Logga ut</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item mb-2 mb-lg-0">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Admin-loggin</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="btn btn-booking w-100" asp-area="" asp-controller="Home" asp-action="Booking">Boka tid</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer-modern">
+        <div class="footer-main-modern">
+            <!-- Brand -->
+            <div>
+                <div class="footer-brand-modern">
+                    <div class="footer-brand-icon-modern"><i class="bi bi-car-front-fill"></i></div>
+                    <div>
+                        <div class="footer-brand-name-modern">Årsta</div>
+                        <div class="footer-brand-sub-modern">Bilvård</div>
+                    </div>
+                </div>
+                <p class="footer-tagline-modern">
+                    Professionell bilvård i hjärtat av Årsta. Noggrannhet och premiumprodukter — ett resultat som glänser.
+                </p>
+            </div>
+
+            <!-- Quick links -->
+            <div>
+                <div class="footer-section-label-modern">Snabblänkar</div>
+                <ul class="footer-links-modern">
+                    <li><a asp-action="Index" asp-controller="Home"><i class="bi bi-chevron-right"></i> Hem</a></li>
+                    <li><a asp-action="Services" asp-controller="Home"><i class="bi bi-chevron-right"></i> Tjänster</a></li>
+                    <li><a asp-action="Contact" asp-controller="Home"><i class="bi bi-chevron-right"></i> Kontakta oss</a></li>
+                    <li><a asp-action="Booking" asp-controller="Home" class="highlight-modern"><i class="bi bi-calendar-check"></i> Boka tid →</a></li>
+                </ul>
+            </div>
+
+            <!-- Hours -->
+            <div>
+                <div class="footer-section-label-modern">Öppettider</div>
+                <div class="hours-row-modern"><span class="day">Mån – Fre</span><span class="time">08:00 – 16:00</span></div>
+                <div class="hours-row-modern"><span class="day">Lördag</span><span class="closed">Stängt</span></div>
+                <div class="hours-row-modern"><span class="day">Söndag</span><span class="closed">Stängt</span></div>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <div class="footer-section-label-modern">Hitta oss</div>
+                <div class="contact-item-modern">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>Byängsgränd 10<br>120 40 Årsta</span>
+                </div>
+                <div class="contact-item-modern">
+                    <i class="bi bi-telephone-fill"></i>
+                    <span>087220216</span>
+                </div>
+                <div class="contact-item-modern">
+                    <i class="bi bi-envelope-fill"></i>
+                    <span>rafatnagah83@hotmail.com</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom bar -->
+        <div class="footer-bottom-modern">
+            <div class="footer-bottom-inner-modern">
+                <span class="footer-copy-modern">© 2026 Årsta Bilvård. Alla rättigheter förbehållna.</span>
+                <a asp-action="Privacy" asp-controller="Home">Integritetspolicy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        const nav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 10);
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <partial name="_BookingModal" />
+</body>
+</html>

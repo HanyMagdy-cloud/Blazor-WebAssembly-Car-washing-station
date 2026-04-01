@@ -1,0 +1,95 @@
+<!-- Booking Modal Partial -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content booking-modal-content">
+            <div class="modal-header booking-modal-header text-center position-relative">
+                <h5 class="modal-title w-100 fw-bold" id="bookingModalLabel">Boka din tvätt</h5>
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Stäng"></button>
+            </div>
+            <div class="modal-body p-3 p-md-4">
+                
+                <!-- Step 1: Date & Time Selection -->
+                <div id="step-datetime">
+                    <h4 class="mb-4 text-primary fw-bold">Steg 1: Välj dag och tid</h4>
+                    
+                    <div class="mb-4">
+                        <label for="bookingDate" class="form-label fw-bold">Välj datum</label>
+                        <input type="date" class="form-control form-control-lg" id="bookingDate" min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    </div>
+
+                    <div id="timeSlotsContainer" class="d-none">
+                        <label class="form-label fw-bold mb-3">Tillgängliga tider</label>
+                        <div class="row g-3" id="timeSlotsGrid">
+                            <!-- Time slots injected here via JS -->
+                        </div>
+                    </div>
+                    
+                    <div class="text-end mt-4 d-none" id="step1Actions">
+                        <button type="button" class="btn btn-primary btn-lg rounded-pill px-4" id="btnNextToDetails">Nästa: Dina uppgifter</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Customer Details -->
+                <div id="step-details" class="d-none">
+                    <h4 class="mb-4 text-primary fw-bold">Steg 2: Dina uppgifter</h4>
+                    <form id="bookingForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="customerName" class="form-label">Namn</label>
+                                <input type="text" class="form-control" id="customerName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="customerEmail" class="form-label">E-post</label>
+                                <input type="email" class="form-control" id="customerEmail" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="customerPhone" class="form-label">Telefonnummer</label>
+                                <input type="tel" class="form-control" id="customerPhone" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="carPlate" class="form-label">Registreringsnummer</label>
+                                <input type="text" class="form-control" id="carPlate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="companyName" class="form-label">Företagsnamn (valfritt)</label>
+                                <input type="text" class="form-control" id="companyName">
+                            </div>
+                            <div class="col-12">
+                                <label for="serviceSelect" class="form-label">Välj tjänst</label>
+                                <select class="form-select" id="serviceSelect" required>
+                                    <option value="">Välj en tjänst...</option>
+                                    <!-- Populated via API -->
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="bookingNotes" class="form-label">Anteckningar (valfritt)</label>
+                                <textarea class="form-control" id="bookingNotes" rows="3"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden fields to hold selected Date and Time -->
+                        <input type="hidden" id="selectedDate">
+                        <input type="hidden" id="selectedTime">
+                        
+                        <div class="d-flex justify-content-between mt-5">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" id="btnBackToDateTime">Tillbaka</button>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSubmitBooking">Bekräfta bokning</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 3: Success Message -->
+                <div id="step-success" class="d-none text-center py-5">
+                    <div class="mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-check-circle-fill text-success mb-3" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>
+                        <h2 class="fw-bold">Bokning är klart</h2>
+                    </div>
+                    <button type="button" class="btn btn-primary rounded-pill px-5" data-bs-dismiss="modal">Klar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

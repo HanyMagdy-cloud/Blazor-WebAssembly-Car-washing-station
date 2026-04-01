@@ -1,0 +1,123 @@
+@model CarWashStation.Models.Booking
+
+@{
+    ViewData["Title"] = "Redigera bokning";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3">
+                    <i class="bi bi-arrow-left"></i> Tillbaka
+                </a>
+                <h1 class="display-6 fw-bold m-0" style="color: var(--navy);">Redigera <span style="color: var(--teal);">bokning</span></h1>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-header border-0 py-3 px-4" style="background: var(--teal-light);">
+                    <h5 class="m-0 fw-bold" style="color: var(--teal-deeper);">Bokningsdetaljer</h5>
+                </div>
+                <div class="card-body p-4 p-lg-5">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row g-4">
+                            <!-- Customer Name -->
+                            <div class="col-md-6">
+                                <label asp-for="CustomerName" class="form-label fw-bold text-muted small text-uppercase">Kundnamn</label>
+                                <input asp-for="CustomerName" class="form-control form-control-lg rounded-3 border-2" style="border-color: var(--border-col);" />
+                                <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-bold text-muted small text-uppercase">E-post</label>
+                                <input asp-for="Email" class="form-control form-control-lg rounded-3 border-2" style="border-color: var(--border-col);" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label fw-bold text-muted small text-uppercase">Telefonnummer</label>
+                                <input asp-for="PhoneNumber" class="form-control form-control-lg rounded-3 border-2" style="border-color: var(--border-col);" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Car Plate -->
+                            <div class="col-md-6">
+                                <label asp-for="CarPlateNumber" class="form-label fw-bold text-muted small text-uppercase">Registreringsnummer</label>
+                                <input asp-for="CarPlateNumber" class="form-control form-control-lg rounded-3 border-2" style="border-color: var(--border-col);" />
+                                <span asp-validation-for="CarPlateNumber" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Service Selection -->
+                            <div class="col-md-12">
+                                <label asp-for="ServiceId" class="form-label fw-bold text-muted small text-uppercase">Tjänst</label>
+                                <select asp-for="ServiceId" class="form-select form-select-lg rounded-3 border-2" style="border-color: var(--border-col);" 
+                                        asp-items="@(new SelectList(ViewBag.Services, "Id", "Name"))">
+                                </select>
+                                <span asp-validation-for="ServiceId" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Booking Date -->
+                            <div class="col-md-6">
+                                <label asp-for="BookingDate" class="form-label fw-bold text-muted small text-uppercase">Datum</label>
+                                <input asp-for="BookingDate" type="date" class="form-control form-control-lg rounded-3 border-2" style="border-color: var(--border-col);" />
+                                <span asp-validation-for="BookingDate" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Time Slot -->
+                            <div class="col-md-6">
+                                <label asp-for="TimeSlot" class="form-label fw-bold text-muted small text-uppercase">Tid</label>
+                                <input asp-for="TimeSlot" type="time" class="form-control form-control-lg rounded-3 border-2" style="border-color: var(--border-col);" />
+                                <span asp-validation-for="TimeSlot" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Company Name -->
+                            <div class="col-md-6">
+                                <label asp-for="CompanyName" class="form-label fw-bold text-muted small text-uppercase">Företagsnamn (valfritt)</label>
+                                <input asp-for="CompanyName" class="form-control form-control-lg rounded-3 border-2" style="border-color: var(--border-col);" />
+                                <span asp-validation-for="CompanyName" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-md-12">
+                                <label asp-for="Notes" class="form-label fw-bold text-muted small text-uppercase">Anteckningar (valfritt)</label>
+                                <textarea asp-for="Notes" class="form-control form-control-lg rounded-3 border-2" style="border-color: var(--border-col);" rows="3"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column flex-sm-row gap-3 mt-5">
+                            <button type="submit" class="btn btn-lg btn-teal flex-grow-1 py-3 fw-bold rounded-pill text-white shadow-sm" style="background: var(--teal);">
+                                Spara ändringar
+                            </button>
+                            <a asp-action="Index" class="btn btn-lg btn-light py-3 px-5 fw-bold rounded-pill border-2 w-100 w-sm-auto" style="border-color: var(--border-col); color: var(--text-mid);">
+                                Avbryt
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: var(--teal) !important;
+        box-shadow: 0 0 0 0.25rem rgba(59, 191, 191, 0.15);
+    }
+    .btn-teal:hover {
+        background: var(--teal-dark) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 191, 191, 0.3) !important;
+        transition: all 0.2s ease;
+    }
+</style>

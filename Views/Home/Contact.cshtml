@@ -1,0 +1,291 @@
+@{
+    ViewData["Title"] = "Kontakta oss";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+      --cream: #f4fbfb;
+      --ink: #1a1714;
+      --rust: #c0392b;
+      --rust-light: #e8d5d3;
+      --gold: #b8963e;
+      --muted: #6b6459;
+      --white: #ffffff;
+      --card-bg: #fdfaf6;
+      --border: #e2ddd6;
+    }
+
+    .contact-modern-page {
+      background-color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      margin: -2rem -1rem; /* Offset parent container padding if any */
+      padding-bottom: 5rem;
+    }
+
+    /* ── Hero ── */
+    .hero-modern {
+      padding: 5rem 1.5rem 3.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-modern::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(192,57,43,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow-modern {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rust);
+      border: 1px solid var(--rust-light);
+      padding: 0.3rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1.4rem;
+      animation: fadeUpModern 0.6s ease both;
+    }
+
+    .h1-modern {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--ink) !important;
+      animation: fadeUpModern 0.6s 0.1s ease both;
+    }
+
+    .h1-modern span {
+      color: var(--rust);
+      font-style: italic;
+    }
+
+    .subtitle-modern {
+      margin-top: 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 38ch;
+      margin-inline: auto;
+      animation: fadeUpModern 0.6s 0.2s ease both;
+    }
+
+    /* ── Divider ── */
+    .divider-modern {
+      width: 3rem;
+      height: 2px;
+      background: linear-gradient(90deg, var(--rust), var(--gold));
+      margin: 2rem auto;
+      border-radius: 999px;
+      animation: fadeUpModern 0.6s 0.25s ease both;
+    }
+
+    /* ── Cards grid ── */
+    .cards-section-modern {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+    }
+
+    .cards-grid-modern {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      animation: fadeUpModern 0.7s 0.3s ease both;
+    }
+
+    @@media (max-width: 600px) {
+      .cards-grid-modern { grid-template-columns: 1fr; }
+    }
+
+    .card-modern {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 2rem 1.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: default;
+      display: block;
+    }
+
+    .card-modern::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--rust), var(--gold));
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .card-modern:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(26,23,20,0.1);
+    }
+
+    .card-modern:hover::after { opacity: 1; }
+
+    .icon-wrap-modern {
+      width: 3rem;
+      height: 3rem;
+      background: var(--rust-light);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.1rem;
+    }
+
+    .icon-wrap-modern i {
+      font-size: 1.25rem;
+      color: var(--rust);
+    }
+
+    .card-label-modern {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .card-modern h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+
+    .card-modern p, .card-modern a {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.7;
+      text-decoration: none;
+    }
+
+    .card-modern a {
+      color: var(--rust);
+      font-weight: 400;
+      transition: opacity 0.2s;
+    }
+
+    .card-modern a:hover { opacity: 0.7; }
+
+    /* ── Map section ── */
+    .map-section-modern {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      animation: fadeUpModern 0.7s 0.4s ease both;
+    }
+
+    .map-header-modern {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .map-header-modern i {
+      color: var(--gold);
+      font-size: 1rem;
+    }
+
+    .map-header-modern span {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .map-wrap-modern {
+      border-radius: 1.25rem;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(26,23,20,0.08);
+      height: 420px;
+      position: relative;
+    }
+
+    .map-wrap-modern iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    /* ── Animations ── */
+    @@keyframes fadeUpModern {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="contact-modern-page">
+    <!-- Hero -->
+    <section class="hero-modern">
+        <div class="eyebrow-modern"><i class="bi bi-car-front me-1"></i> Bilvård i Årsta</div>
+        <h1 class="h1-modern">Kontakta <span>oss</span></h1>
+        <p class="subtitle-modern">Har du frågor? Vi är här för att hjälpa dig — ring, maila eller besök oss.</p>
+        <div class="divider-modern"></div>
+    </section>
+
+    <!-- Info cards -->
+    <div class="cards-section-modern">
+        <div class="cards-grid-modern">
+            <!-- Address card -->
+            <div class="card-modern">
+                <div class="icon-wrap-modern"><i class="bi bi-geo-alt-fill"></i></div>
+                <p class="card-label-modern">Hitta oss</p>
+                <h4>Adress</h4>
+                <p>
+                    Årsta Bilvård<br>
+                    Byängsgränd 10<br>
+                    120 40 Årsta
+                </p>
+            </div>
+
+            <!-- Contact card -->
+            <div class="card-modern">
+                <div class="icon-wrap-modern"><i class="bi bi-telephone-fill"></i></div>
+                <p class="card-label-modern">Reach out</p>
+                <h4>Kontakt</h4>
+                <p>
+                    <a href="tel:087220216">087220216</a><br>
+                    <a href="mailto:rafatnagah83@hotmail.com">rafatnagah83@hotmail.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map -->
+    <div class="map-section-modern">
+        <div class="map-header-modern">
+            <i class="bi bi-map"></i>
+            <span>Karta &amp; vägbeskrivning</span>
+        </div>
+        <div class="map-wrap-modern">
+            <iframe src="https://www.google.com/maps?q=Byängsgränd%2010,%20120%2040%20Årsta&output=embed"
+                    allowfullscreen
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+    </div>
+</div>

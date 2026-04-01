@@ -1,0 +1,320 @@
+@{
+    ViewData["Title"] = "Services";
+}
+
+<style>
+    /* Premium Styling for Service Cards */
+    .service-card {
+        border: none;
+        border-radius: 1.25rem;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+
+    .service-img-wrapper {
+        height: 240px;
+        width: 100%;
+        overflow: hidden;
+        background-color: #ffffff;
+        padding: 1.875rem 0 0 0; /* 30px top space */
+    }
+
+    .service-img {
+        height: 100%;
+        width: 100%;
+        object-fit: fill;
+        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .service-card:hover .service-img {
+        transform: scale(1.1);
+    }
+    
+    .price-tag {
+        font-size: 1.25rem;
+        color: #0d6efd;
+        font-weight: 700;
+    }
+
+    .btn-boka {
+        padding: 0.75rem 2rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-3 fw-bold mb-3 px-2" style="color: #0d284f; font-size: clamp(2rem, 8vw, 4rem);">Våra Tjänster</h1>
+        <p class="lead text-muted fs-4 px-3">Upptäck våra premiumtjänster för en skinande ren och välvårdad bil.</p>
+    </div>
+    
+    <div class="row g-5 justify-content-center">
+        <!-- 1. Utvändig tvätt -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal" 
+                 data-title="Utvändig tvätt" data-price="400 kr" data-img="/images/1.png"
+                 data-desc="Vår professionella utvändiga tvätt är designad för att ge din bil en grundlig rengöring och en fantastisk glans. Vi använder skonsamma men effektiva rengöringsmedel som tar bort vägsmuts, asfaltsfläckar och insekter utan att skada lacken.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/1.png" alt="Utvändig tvätt" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Utvändig tvätt</h3>
+                    <div class="price-tag mb-3">400 kr</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Professionell yttre rengöring som tar bort smuts och ger glans.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. In och utvändig tvätt -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="In & utvändig tvätt" data-price="750 kr" data-img="/images/2.png"
+                 data-desc="Den perfekta lösningen för dig som vill ha en helhetsupplevelse. Vi rengör bilen noggrant både inuti och utanpå. Inkluderar dammsugning, fönsterputsning och avtorkning av interiör samt vår kompletta utvändiga tvätt.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/2.png" alt="In och utvändig tvätt" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">In & utvändig tvätt</h3>
+                    <div class="price-tag mb-3">750 kr</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Komplett rengöring för både insida och utsida av din bil.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Rekond -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="Rekond" data-price="fr 2500 kr" data-img="/images/3.png"
+                 data-desc="Vår rekonditionering återställer din bils nybilskänsla. Vi arbetar på djupet med polering, vaxning och djuprengöring av textilier eller läder. Ett måste för att bevara bilens värde och utseende.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/3.png" alt="Rekond" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Rekond</h3>
+                    <div class="price-tag mb-3">fr 2500 kr</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Djupgående rengöring och polering för att återställa bilens nybilskänsla.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Tvätt + vax -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="Tvätt + vax" data-price="1750 kr" data-img="/images/4.png"
+                 data-desc="Skydda din bils lack med vår tvätt och vaxning. Vaxet ger en extra skyddande hinna mot miljöns påverkan och gör det enklare att hålla bilen ren i framtiden.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/4.png" alt="Tvätt + vax" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Tvätt + vax</h3>
+                    <div class="price-tag mb-3">1750 kr</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Kombination av rengöring och skyddande vaxlager.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Motortvätt -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="Motortvätt" data-price="350 kr" data-img="/images/5.png"
+                 data-desc="En ren motor är en glad motor. Vi tar bort fett och smuts från motorutrymmet på ett säkert sätt, vilket underlättar service och ser till att motorn kyls optimalt.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/5.png" alt="Motortvätt" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Motortvätt</h3>
+                    <div class="price-tag mb-3">350 kr</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Rengöring av motorrummet för optimal prestanda och estetik.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Invändig tvätt -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="Invändig tvätt" data-price="400 kr" data-img="/images/6.png"
+                 data-desc="Vi ger din interiör den uppmärksamhet den förtjänar. Grundlig dammsugning, avtorkning av alla plast- och vinylytor samt fönsterputsning invändigt för en fräsch körmiljö.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/6.png" alt="Invändig tvätt" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Invändig tvätt</h3>
+                    <div class="price-tag mb-3">400 kr</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Grundlig dammsugning och avtorkning av alla inre ytor.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Däckförvaring + skifte -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="Däckförvaring + skifte" data-price="950 kr / säsong" data-img="/images/7.png"
+                 data-desc="Spara plats hemma och låt oss ta hand om dina däck. I tjänsten ingår både säsongsförvaring i våra däckhotell samt proffsigt skifte vid säsongsbyte.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/7.png" alt="Däckförvaring + skifte" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Däckförvaring</h3>
+                    <div class="price-tag mb-3">950 kr / säsong</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Bekväm säsongsförvaring av dina däck inklusive däckskifte.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Däckskifte -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="Däckskifte" data-price="350 kr" data-img="/images/8.png"
+                 data-desc="Snabbt och säkert däckskifte inför sommar- eller vintersäsongen. Vi ser till att dina bultar dras med rätt moment för din säkerhet.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/8.png" alt="Däckskifte" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Däckskifte</h3>
+                    <div class="price-tag mb-3">350 kr</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Snabb och säker byte av hjul för säsongen.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. Lackförsegling -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="Lackförsegling" data-price="2295 kr" data-img="/images/9.png"
+                 data-desc="Vår lackförsegling ger din bil en oslagbar lyster och ett starkt skydd mot oxid, vägsalt och UV-strålning. Det gör även bilen extremt lätttvättad under lång tid framöver.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/9.png" alt="Lackförsegling" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Lackförsegling</h3>
+                    <div class="price-tag mb-3">2295 kr</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Långvarigt skydd för din bils lack mot repor och UV-ljus.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. Lagning av punktering -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="Lagning av punktering" data-price="350 kr" data-img="/images/10.png"
+                 data-desc="Har du fått punktering? Ingen fara. Vi lagar ditt däck snabbt och säkert inifrån med godkända metoder så att du snabbt är ute på vägen igen.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/10.png" alt="Lagning av punktering" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Laga punktering</h3>
+                    <div class="price-tag mb-3">350 kr</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Professionell reparation av däckskador.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 11. Däckmontering + balansering -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 service-card" data-bs-toggle="modal" data-bs-target="#serviceDetailModal"
+                 data-title="Däckmontering + balansering" data-price="300 kr / däck" data-img="/images/11.png"
+                 data-desc="När du köper nya däck eller vill flytta däck till nya fälgar hjälper vi dig. Vi monterar och balanserar hjulen för att eliminera vibrationer och säkerställa en jämn och tyst gång.">
+                <div class="service-img-wrapper">
+                    <img src="~/images/11.png" alt="Däckmontering + balansering" class="service-img" />
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <h3 class="card-title fw-bold mb-3">Däckmontering</h3>
+                    <div class="price-tag mb-3">300 kr / däck</div>
+                    <p class="card-text text-muted mb-4 flex-grow-1">Montering av nya däck på fälg och balansering för jämn gång.</p>
+                    <div class="mt-auto">
+                        <a asp-action="Booking" class="btn btn-primary btn-boka rounded-pill w-100 shadow-sm" onclick="event.stopPropagation();">Boka nu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Detail Modal -->
+<div class="modal fade" id="serviceDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 overflow-hidden">
+            <div class="row g-0 flex-column flex-lg-row">
+                <div class="col-lg-5 p-4 d-flex align-items-center justify-content-center bg-light" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); min-height: 300px;">
+                    <img src="" id="modalImg" class="img-fluid rounded-4 shadow-sm" alt="Tjänst" style="max-height: 350px; width: 100%; object-fit: contain;">
+                </div>
+                <div class="col-lg-7">
+                    <div class="modal-header border-0 pb-0">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <h2 class="fw-bold mb-2" id="modalTitle"></h2>
+                        <h4 class="text-primary mb-4" id="modalPrice"></h4>
+                        <hr class="my-4 opactiy-10">
+                        <h5 class="fw-bold mb-3">Beskrivning</h5>
+                        <p class="text-muted fs-5 mb-5" id="modalDesc"></p>
+                        <div class="d-grid pt-3">
+                            <a asp-action="Booking" class="btn btn-primary btn-lg rounded-pill fw-bold">Boka denna tjänst</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var serviceDetailModal = document.getElementById('serviceDetailModal');
+            serviceDetailModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var title = button.getAttribute('data-title');
+                var price = button.getAttribute('data-price');
+                var desc = button.getAttribute('data-desc');
+                var img = button.getAttribute('data-img');
+
+                $('#modalTitle').text(title);
+                $('#modalPrice').text(price);
+                $('#modalDesc').text(desc);
+                $('#modalImg').attr('src', img);
+            });
+        });
+    </script>
+}
+
+
