@@ -5,7 +5,7 @@ namespace CarWashStation.Models
 {
     public class Booking
     {
-        // Primary key
+        // Primary key //
         public int Id { get; set; }
 
         [Required]
