@@ -34,8 +34,8 @@ namespace CarWashStation.Controllers
                 return Json(new List<string>());
             }
 
-            // Working hours 8 AM to 3:30 PM (8:00, 8:30, ..., 15:30)
-            var allSlots = Enumerable.Range(0, 16)
+            // Working hours 8 AM to 4:00 PM (8:00, 8:30, ..., 16:00)
+            var allSlots = Enumerable.Range(0, 17)
                 .Select(i => new TimeSpan(8, 0, 0).Add(TimeSpan.FromMinutes(i * 30)))
                 .ToList();
 
