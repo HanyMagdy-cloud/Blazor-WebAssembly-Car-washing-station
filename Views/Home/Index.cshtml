@@ -15,9 +15,22 @@
     
     .hero-bg {
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: linear-gradient(90deg, rgba(13,43,62,1) 0%, rgba(13,43,62,0.85) 30%, rgba(13,43,62,0.4) 60%, transparent 100%), 
-                    url('@Url.Content("~/images/home.png")') center/cover no-repeat;
+        inset: 0;
+    }
+
+    .hero-video {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .hero-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(13,43,62,0.98) 0%, rgba(13,43,62,0.86) 32%, rgba(13,43,62,0.42) 62%, rgba(13,43,62,0.08) 100%);
     }
 
     .hero-container {
@@ -216,11 +229,56 @@
     .reveal.active {
         opacity: 1; transform: translateY(0);
     }
+
+    @@media (max-width: 767.98px) {
+        .hero-wrapper,
+        .hero-container {
+            min-height: calc(100svh - 72px);
+        }
+
+        .hero-wrapper {
+            border-radius: 0 0 2rem 2rem;
+        }
+
+        .hero-video {
+            object-position: 64% center;
+        }
+
+        .hero-bg::after {
+            background: linear-gradient(90deg, rgba(13,43,62,0.98) 0%, rgba(13,43,62,0.9) 58%, rgba(13,43,62,0.48) 100%);
+        }
+
+        .hero-container {
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.05rem;
+            margin-bottom: 2.5rem;
+            padding-left: 1rem;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .hero-video {
+            display: none;
+        }
+
+        .hero-bg {
+            background: url('@Url.Content("~/images/hero-handwash-cinematic.png")') 64% center / cover no-repeat;
+        }
+    }
 </style>
 
 <!-- Hero Section -->
 <div class="hero-wrapper">
-    <div class="hero-bg"></div>
+    <div class="hero-bg" aria-hidden="true">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata"
+               poster="@Url.Content("~/images/hero-handwash-cinematic.png")">
+            <source src="@Url.Content("~/videos/hero-handwash-cinematic.mp4")" type="video/mp4" />
+        </video>
+    </div>
     <div class="hero-container container">
         <div class="hero-content-panel">
             <span class="badge rounded-pill px-4 py-2 mb-4" 
