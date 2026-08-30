@@ -1,150 +1,64 @@
-# 🚗 CarWashStation
+# CarWashStation
 
-A web-based booking system for managing car wash appointments, built with ASP.NET Core MVC.
+Car-wash booking system split into three .NET 10 projects so the UI and API can be deployed independently.
 
-## 📌 Overview
+## Solution structure
 
-CarWashStation allows customers to book available time slots for car wash services while giving administrators full control over scheduling, including blocking specific dates or time ranges.
-
----
-
-## ✨ Features
-
-### 👤 Customer
-
-* View available time slots
-* Book car wash appointments
-* Prevent double-booking
-
-### 🛠️ Admin
-
-* Block entire days (e.g. holidays)
-* Block specific time ranges (e.g. 08:00–10:00)
-* View active blocks
-* Remove blocks
-
----
-
-## 🧠 How It Works
-
-* The system generates available time slots (e.g. 08:00–16:00)
-* Booked slots are automatically excluded
-* Blocked slots (full day or time range) are also excluded
-* Only valid and available times are shown to users
-
----
-
-## 🏗️ Tech Stack
-
-* ASP.NET Core MVC
-* Entity Framework Core
-* SQLite (or SQL Server depending on setup)
-* Razor Views
-* Bootstrap (UI styling)
-
----
-
-## 📂 Project Structure
-
-```
-CarWashStation/
-│
-├── Controllers/
-│   ├── BookingController.cs
-│   └── AdminController.cs
-│
-├── Models/
-│   ├── Booking.cs
-│   └── BlockedSlot.cs
-│
-├── Views/
-│   ├── Booking/
-│   ├── Admin/
-│   └── Shared/
-│
-├── Data/
-│   └── ApplicationDbContext.cs
-│
-└── Program.cs
+```text
+CarWashStation.Client/   Blazor WebAssembly UI (Azure Static Web Apps)
+CarWashStation.Api/      ASP.NET Core Web API, EF Core, email and SMS (Azure App Service)
+CarWashStation.Shared/   Models and API contracts shared by Client and API
 ```
 
----
+Both executable projects reference `CarWashStation.Shared`; the client calls the API with `HttpClient`.
 
-## ⚙️ Setup & Installation
+## Local configuration
 
-### 1. Clone the repository
+Do not put credentials in `appsettings.json`. Configure the API with user-secrets or environment variables:
 
-```bash
-git clone https://github.com/your-username/CarWashStation.git
-cd CarWashStation
+```powershell
+dotnet user-secrets init --project CarWashStation.Api
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "YOUR_SQL_CONNECTION" --project CarWashStation.Api
+dotnet user-secrets set "Admin:Email" "YOUR_ADMIN_EMAIL" --project CarWashStation.Api
+dotnet user-secrets set "Admin:Password" "YOUR_ADMIN_PASSWORD" --project CarWashStation.Api
+dotnet user-secrets set "EmailSettings:SmtpUser" "YOUR_SMTP_USER" --project CarWashStation.Api
+dotnet user-secrets set "EmailSettings:SmtpPass" "YOUR_SMTP_PASSWORD" --project CarWashStation.Api
 ```
 
-### 2. Install dependencies
+Set `CarWashStation.Client/wwwroot/appsettings.json` → `ApiBaseUrl` to the API URL. Add the client URL to `Cors:AllowedOrigins` in the API settings.
 
-```bash
-dotnet restore
+Run the API and client in separate terminals:
+
+```powershell
+dotnet run --project CarWashStation.Api
+dotnet run --project CarWashStation.Client
 ```
 
-### 3. Apply database migrations
+## Azure deployment
 
-```bash
-dotnet ef database update
+### API: Azure App Service
+
+Publish `CarWashStation.Api/CarWashStation.Api.csproj`. In App Service Configuration, add:
+
+- `ConnectionStrings__DefaultConnection`
+- `Admin__Email` and `Admin__Password`
+- `EmailSettings__SmtpUser`, `EmailSettings__SmtpPass`, and `EmailSettings__FromEmail`
+- Twilio settings if SMS is enabled
+- `Cors__AllowedOrigins__0=https://YOUR-STATIC-APP.azurestaticapps.net`
+- Another CORS entry for the custom UI domain
+
+Use an Azure SQL connection string; Windows integrated authentication from the old local configuration will not work in App Service.
+
+### UI: Azure Static Web Apps (Free)
+
+Build and deploy `CarWashStation.Client`. Publish with `dotnet publish CarWashStation.Client -c Release`; deploy the generated `publish/wwwroot` content. Before publishing, set `ApiBaseUrl` to the HTTPS App Service URL.
+
+`staticwebapp.config.json` supplies the SPA navigation fallback for Blazor routes. Static Web Apps provides managed TLS and custom-domain support, subject to Azure's current plan limits.
+
+## Build
+
+```powershell
+dotnet build CarWashStation.slnx
 ```
 
-### 4. Run the application
-
-```bash
-dotnet run
-```
-
-Then open:
-
-```
-https://localhost:5001
-```
-
----
-
-## 🗓️ Blocking System
-
-Admins can create blocks in two ways:
-
-### 🔴 Full Day
-
-* Leave time fields empty
-* Blocks the entire date
-
-### 🟡 Time Range
-
-* Set **StartTime** and **EndTime**
-* Example: `08:00 → 10:00`
-* All slots within that range are unavailable
-
----
-
-## 📸 UI Example
-
-* Add blocking form
-* Active blocking list
-* Time range display (e.g. `08:00 - 10:00`)
-
----
-
-## 🚀 Future Improvements
-
-* Authentication & role-based access
-* Email/SMS booking confirmations
-* Calendar view
-* Multi-bay support (multiple cars at once)
-* Payment integration
-
----
-
-
-
-## 👨‍💻 Author
-
-Your Name
-GitHub: https://github.com/your-username
-
----
+The existing EF Core migrations remain in `CarWashStation.Api/Migrations`.

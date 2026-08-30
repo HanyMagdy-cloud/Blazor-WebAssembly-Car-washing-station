@@ -1,0 +1,54 @@
+@page "/admin/bookings/{Id:int}/edit"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@using CarWashStation.Models
+
+<PageTitle>Redigera bokning</PageTitle>
+<section class="page narrow"><p><a href="admin">← Tillbaka till administration</a></p><h1>Redigera bokning</h1>
+@if (unauthorized) { <p>Du behöver <a href="login">logga in</a>.</p> }
+else if (booking is null) { <p>Laddar…</p> }
+else {
+ <EditForm Model="booking" OnValidSubmit="Save"><DataAnnotationsValidator /><ValidationSummary />
+   <label>Namn<InputText @bind-Value="booking.CustomerName" /></label>
+   <label>E-post<InputText @bind-Value="booking.Email" /></label>
+   <label>Telefon<InputText @bind-Value="booking.PhoneNumber" /></label>
+   <label>Registreringsnummer<InputText @bind-Value="booking.CarPlateNumber" /></label>
+   <label>Företag<InputText @bind-Value="booking.CompanyName" /></label>
+   <label>Tjänst<InputSelect @bind-Value="booking.ServiceId">@foreach (var service in services) { <option value="@service.Id">@service.Name – @service.Price.ToString("0") kr</option> }</InputSelect></label>
+   <label>Datum<InputDate @bind-Value="booking.BookingDate" /></label>
+   <label>Tid (HH:mm)<InputText @bind-Value="timeText" placeholder="10:30" /></label>
+   <label>Anteckningar<InputTextArea @bind-Value="booking.Notes" /></label>
+   <button class="button" disabled="@saving">@(saving ? "Sparar…" : "Spara ändringar")</button>
+ </EditForm>
+ @if (!string.IsNullOrWhiteSpace(error)) { <p class="error">@error</p> }
+}
+</section>
+
+@code {
+ [Parameter] public int Id { get; set; }
+ private CarWashStation.Models.Booking? booking;
+ private List<Service> services = [];
+ private string timeText = "";
+ private string? error;
+ private bool saving;
+ private bool unauthorized;
+
+ protected override async Task OnParametersSetAsync()
+ {
+   var response = await Http.GetAsync($"api/admin/bookings/{Id}");
+   unauthorized = response.StatusCode == System.Net.HttpStatusCode.Unauthorized;
+   if (!response.IsSuccessStatusCode) return;
+   booking = await response.Content.ReadFromJsonAsync<CarWashStation.Models.Booking>();
+   services = await Http.GetFromJsonAsync<List<Service>>("api/bookings/services") ?? [];
+   timeText = booking?.TimeSlot.ToString(@"hh\:mm") ?? "";
+ }
+ private async Task Save()
+ {
+   if (booking is null || !TimeSpan.TryParse(timeText, out var time)) { error = "Ange en giltig tid."; return; }
+   booking.TimeSlot = time; booking.Service = null; saving = true; error = null;
+   var response = await Http.PutAsJsonAsync($"api/admin/bookings/{booking.Id}", booking);
+   saving = false;
+   if (response.IsSuccessStatusCode) Navigation.NavigateTo("admin");
+   else error = await response.Content.ReadAsStringAsync();
+ }
+}

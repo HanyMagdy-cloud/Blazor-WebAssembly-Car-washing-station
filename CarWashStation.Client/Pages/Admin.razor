@@ -1,0 +1,36 @@
+@page "/admin"
+@inject HttpClient Http
+@inject IJSRuntime JS
+@using CarWashStation.Models
+
+<PageTitle>Administration</PageTitle>
+<section class="page"><h1>Administration</h1>
+@if (unauthorized) { <p>Du behöver <a href="login">logga in</a>.</p> }
+else if (dashboard is null) { <p>Laddar…</p> }
+else {
+ <div class="stats"><article><strong>@dashboard.TotalBookingsCount</strong><span>Bokningar</span></article><article><strong>@dashboard.TodayCount</strong><span>Idag</span></article><article><strong>@dashboard.MonthlyRevenue.ToString("0") kr</strong><span>Månad</span></article><article><strong>@dashboard.TotalCustomersCount</strong><span>Kunder</span></article></div>
+ <div class="table-wrap"><table><thead><tr><th>Datum</th><th>Tid</th><th>Kund</th><th>Bil</th><th>Tjänst</th><th>Åtgärder</th></tr></thead><tbody>
+ @foreach (var item in dashboard.RecentBookings) { <tr><td>@item.BookingDate.ToString("yyyy-MM-dd")</td><td>@item.TimeSlot.ToString(@"hh\:mm")</td><td>@item.CustomerName</td><td>@item.CarPlateNumber</td><td>@item.Service?.Name</td><td class="actions"><a class="edit-button" href="admin/bookings/@item.Id/edit">Redigera</a><button class="delete-button" @onclick="() => Delete(item)">Ta bort</button></td></tr> }
+ </tbody></table></div>
+}
+</section>
+
+@code {
+ private AdminDashboardViewModel? dashboard; private bool unauthorized;
+ protected override async Task OnInitializedAsync()
+ {
+   await LoadDashboard();
+ }
+ private async Task LoadDashboard()
+ {
+   var response = await Http.GetAsync("api/admin/dashboard"); unauthorized = response.StatusCode == System.Net.HttpStatusCode.Unauthorized;
+   if (response.IsSuccessStatusCode) dashboard = await response.Content.ReadFromJsonAsync<AdminDashboardViewModel>();
+ }
+ private async Task Delete(CarWashStation.Models.Booking booking)
+ {
+   var confirmed = await JS.InvokeAsync<bool>("confirm", $"Ta bort bokningen för {booking.CustomerName} den {booking.BookingDate:yyyy-MM-dd}?");
+   if (!confirmed) return;
+   var response = await Http.DeleteAsync($"api/admin/bookings/{booking.Id}");
+   if (response.IsSuccessStatusCode) await LoadDashboard();
+ }
+}

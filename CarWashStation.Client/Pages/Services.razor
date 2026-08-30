@@ -1,0 +1,15 @@
+@page "/services"
+@inject HttpClient Http
+@using CarWashStation.Models
+@using System.Net.Http.Json
+
+<PageTitle>Tjänster</PageTitle>
+<section class="page"><h1>Våra tjänster</h1>
+@if (services is null) { <p>Laddar…</p> }
+else { <div class="cards">@foreach (var service in services) { <article class="service-card"><img src="images/@(service.Id).png" alt="@service.Name" /><div><h2>@service.Name</h2><p>@service.Description</p><strong>@service.Price.ToString("0") kr</strong></div></article> }</div> }
+</section>
+
+@code {
+    private List<Service>? services;
+    protected override async Task OnInitializedAsync() => services = await Http.GetFromJsonAsync<List<Service>>("api/bookings/services");
+}

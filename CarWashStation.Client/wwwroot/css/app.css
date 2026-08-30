@@ -1,0 +1,26 @@
+:root { font-family: Inter, system-ui, sans-serif; color: #172022; background: #f5f7f7; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: #087f5b; }
+.site-header { min-height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 6vw; background: #102a2e; color: white; position: sticky; top: 0; z-index: 2; }
+.site-header a { color: #dce8e5; text-decoration: none; margin-left: 1.5rem; }
+.site-header .brand { color: white; font-weight: 800; font-size: 1.25rem; margin: 0; }
+.site-header .brand img { width: 150px; height: 56px; object-fit: contain; border-radius: 4px; }
+.site-header a.active { color: #55d6a6; }
+main { min-height: calc(100vh - 140px); }
+.hero { min-height: 68vh; display: grid; align-items: center; padding: 8vw; color: white; background: linear-gradient(90deg, rgba(4,26,29,.93), rgba(4,26,29,.2)), url('/images/hero-handwash-cinematic.png') center/cover; }
+.hero div { max-width: 640px; }.hero h1 { font-size: clamp(2.6rem, 6vw, 5.5rem); line-height: .98; margin: .4rem 0 1.5rem; }.hero p { font-size: 1.2rem; }
+.eyebrow { color: #55d6a6; text-transform: uppercase; font-weight: 800; letter-spacing: .15em; }
+.button { display: inline-block; border: 0; border-radius: 6px; padding: .85rem 1.2rem; margin-top: .5rem; background: #13a875; color: white; text-decoration: none; font-weight: 700; cursor: pointer; }
+.page { width: min(1120px, 90vw); margin: 4rem auto; }.narrow { width: min(620px, 90vw); }
+.content-grid,.cards,.stats { width: min(1120px, 90vw); margin: 3rem auto; display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 1.25rem; }
+article { background: white; border: 1px solid #dfe7e5; border-radius: 10px; padding: 1.5rem; }.cards strong { color: #087f5b; font-size: 1.25rem; }
+.service-card { padding: 0; overflow: hidden; }.service-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }.service-card div { padding: 1.25rem; }
+form { display: grid; gap: 1rem; } label { display: grid; gap: .35rem; font-weight: 600; } label.check { display: flex; align-items: center; gap: .5rem; }
+input,select,textarea { width: 100%; padding: .7rem; border: 1px solid #b6c5c1; border-radius: 5px; background: white; } textarea { min-height: 100px; }
+.message { padding: 1rem; background: #dff7ed; }.error { color: #a61b1b; }.stats { width: 100%; }.stats article { display: grid; }.stats strong { font-size: 2rem; }.stats span { color: #526562; }
+.table-wrap { overflow-x: auto; }table { width: 100%; border-collapse: collapse; background: white; }th,td { text-align: left; padding: .8rem; border-bottom: 1px solid #dfe7e5; }
+.actions { display: flex; gap: .5rem; white-space: nowrap; }.edit-button,.delete-button { border: 0; border-radius: 5px; padding: .5rem .75rem; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }.edit-button { color: #075f47; background: #dff7ed; }.delete-button { color: #9d1717; background: #fde3e3; }
+footer { text-align: center; padding: 2rem; color: #61716f; }
+#blazor-error-ui { display: none; }
+@media(max-width:700px){.site-header{align-items:flex-start;flex-direction:column;padding:1rem}.site-header nav{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:.8rem}.site-header nav a{margin:0}.hero{min-height:60vh}}

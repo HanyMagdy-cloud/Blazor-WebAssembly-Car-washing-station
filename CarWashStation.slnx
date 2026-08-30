@@ -1,3 +1,7 @@
 <Solution>
-  <Project Path="CarWashStation.csproj" />
+  <Folder Name="/src/">
+    <Project Path="CarWashStation.Client/CarWashStation.Client.csproj" />
+    <Project Path="CarWashStation.Api/CarWashStation.Api.csproj" />
+    <Project Path="CarWashStation.Shared/CarWashStation.Shared.csproj" />
+  </Folder>
 </Solution>

@@ -1,0 +1,26 @@
+@page "/login"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@using CarWashStation.Models
+
+<PageTitle>Admin login</PageTitle>
+<section class="page narrow"><h1>Admin login</h1>
+<EditForm Model="model" OnValidSubmit="SubmitLogin"><DataAnnotationsValidator />
+    <label>E-post<InputText @bind-Value="model.Email" /></label>
+    <label>Lösenord<InputText type="password" @bind-Value="model.Password" /></label>
+    <label class="check"><InputCheckbox @bind-Value="model.RememberMe" /> Kom ihåg mig</label>
+    <button class="button">Logga in</button>
+</EditForm>
+@if (failed) { <p class="error">Fel e-post eller lösenord.</p> }
+</section>
+
+@code {
+    private LoginForm model = new(); private bool failed;
+    private async Task SubmitLogin()
+    {
+        var response = await Http.PostAsJsonAsync("api/account/login", new LoginRequest(model.Email, model.Password, model.RememberMe));
+        failed = !response.IsSuccessStatusCode;
+        if (!failed) Navigation.NavigateTo("admin");
+    }
+    private sealed class LoginForm { public string Email { get; set; } = ""; public string Password { get; set; } = ""; public bool RememberMe { get; set; } }
+}
