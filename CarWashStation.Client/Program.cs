@@ -9,6 +9,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 var apiBaseUrl = builder.Configuration["ApiBaseUrl"]
     ?? throw new InvalidOperationException("ApiBaseUrl is missing from wwwroot/appsettings.json.");
 builder.Services.AddScoped<CookieHandler>();
+builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped(sp => new HttpClient(sp.GetRequiredService<CookieHandler>())
 {
     BaseAddress = new Uri(apiBaseUrl)

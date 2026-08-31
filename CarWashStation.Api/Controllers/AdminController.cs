@@ -55,6 +55,17 @@ public sealed class AdminController(ApplicationDbContext context) : ControllerBa
         if (!await context.Services.AnyAsync(service => service.Id == booking.ServiceId))
             return BadRequest("Den valda tjänsten finns inte.");
 
+        var isBlocked = await context.BlockedSlots.AnyAsync(slot =>
+            slot.Date.Date == booking.BookingDate.Date &&
+            (slot.TimeSlot == null || slot.TimeSlot == booking.TimeSlot));
+        if (isBlocked)
+            return Conflict("Den valda tiden är blockerad i schemakontrollen.");
+
+        var isAlreadyBooked = await context.Bookings.AnyAsync(other =>
+            other.Id != id && other.BookingDate.Date == booking.BookingDate.Date && other.TimeSlot == booking.TimeSlot);
+        if (isAlreadyBooked)
+            return Conflict("Den valda tiden är redan bokad.");
+
         existing.CustomerName = booking.CustomerName;
         existing.Email = booking.Email;
         existing.PhoneNumber = booking.PhoneNumber;
@@ -85,7 +96,24 @@ public sealed class AdminController(ApplicationDbContext context) : ControllerBa
     [HttpPost("blocked-slots")]
     public async Task<ActionResult<BlockedSlot>> BlockSlot(BlockSlotRequest request)
     {
-        TimeSpan? time = string.IsNullOrWhiteSpace(request.TimeSlot) ? null : TimeSpan.Parse(request.TimeSlot);
+        if (request.Date.Date < DateTime.Today)
+            return BadRequest("Det går inte att blockera ett datum i det förflutna.");
+        TimeSpan? time = null;
+        if (!string.IsNullOrWhiteSpace(request.TimeSlot))
+        {
+            if (!TimeSpan.TryParse(request.TimeSlot, out var parsedTime))
+                return BadRequest("Tiden har ett ogiltigt format.");
+            time = parsedTime;
+        }
+
+        var duplicateOrCovered = await context.BlockedSlots.AnyAsync(existing =>
+            existing.Date.Date == request.Date.Date &&
+            (existing.TimeSlot == null || time == null || existing.TimeSlot == time));
+        if (duplicateOrCovered)
+            return Conflict(time is null
+                ? "Datumet har redan en blockering. Ta bort den befintliga blockeringen först."
+                : "Den valda tiden är redan blockerad, eller så är hela dagen blockerad.");
+
         var slot = new BlockedSlot { Date = request.Date.Date, TimeSlot = time, Reason = request.Reason };
         context.BlockedSlots.Add(slot);
         await context.SaveChangesAsync();

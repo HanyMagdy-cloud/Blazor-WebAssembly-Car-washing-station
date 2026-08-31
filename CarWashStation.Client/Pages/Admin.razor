@@ -1,36 +1,108 @@
 @page "/admin"
 @inject HttpClient Http
-@inject IJSRuntime JS
+@inject CarWashStation.Client.Services.ToastService Toasts
 @using CarWashStation.Models
 
-<PageTitle>Administration</PageTitle>
-<section class="page"><h1>Administration</h1>
-@if (unauthorized) { <p>Du behöver <a href="login">logga in</a>.</p> }
-else if (dashboard is null) { <p>Laddar…</p> }
-else {
- <div class="stats"><article><strong>@dashboard.TotalBookingsCount</strong><span>Bokningar</span></article><article><strong>@dashboard.TodayCount</strong><span>Idag</span></article><article><strong>@dashboard.MonthlyRevenue.ToString("0") kr</strong><span>Månad</span></article><article><strong>@dashboard.TotalCustomersCount</strong><span>Kunder</span></article></div>
- <div class="table-wrap"><table><thead><tr><th>Datum</th><th>Tid</th><th>Kund</th><th>Bil</th><th>Tjänst</th><th>Åtgärder</th></tr></thead><tbody>
- @foreach (var item in dashboard.RecentBookings) { <tr><td>@item.BookingDate.ToString("yyyy-MM-dd")</td><td>@item.TimeSlot.ToString(@"hh\:mm")</td><td>@item.CustomerName</td><td>@item.CarPlateNumber</td><td>@item.Service?.Name</td><td class="actions"><a class="edit-button" href="admin/bookings/@item.Id/edit">Redigera</a><button class="delete-button" @onclick="() => Delete(item)">Ta bort</button></td></tr> }
- </tbody></table></div>
+<PageTitle>Admin Dashboard</PageTitle>
+@if (unauthorized)
+{
+    <section class="login-required"><p>Du behöver <a href="login">logga in</a> som administratör.</p></section>
 }
-</section>
+else if (dashboard is null)
+{
+    <section class="dashboard-hero skeleton-hero"><div class="dashboard-shell"><div class="skeleton line eyebrow-line"></div><div class="skeleton line title-line"></div><div class="stats-grid">@for (var i=0;i<4;i++) { <article class="skeleton-card"><span class="skeleton line"></span><strong class="skeleton line"></strong><small class="skeleton line"></small></article> }</div></div></section>
+    <section class="bookings-section skeleton-section"><div class="skeleton line toolbar-line"></div><div class="table-card"><div class="skeleton-table">@for(var i=0;i<6;i++){<div class="skeleton row-line"></div>}</div></div></section>
+}
+else
+{
+    <section class="dashboard-hero">
+        <div class="dashboard-shell">
+            <span class="eyebrow">ADMINISTRATIONSPANEL</span>
+            <h1>Admin <strong>Dashboard</strong></h1>
+            <div class="stats-grid">
+                <article><span>BOKNINGAR TOTALT</span><strong>@dashboard.TotalBookingsCount</strong><small class="up">↑ @dashboard.NewThisWeekCount denna vecka</small></article>
+                <article><span>IDAG</span><strong>@dashboard.TodayCount</strong><small class="remaining">@dashboard.RemainingTodayCount kvar</small></article>
+                <article><span>INTÄKTER (MÅN)</span><strong>@Revenue</strong><small class="revenue">kr denna månad</small></article>
+                <article><span>KUNDER</span><strong>@dashboard.TotalCustomersCount</strong><small class="company">@dashboard.CorporateCustomersCount företag</small></article>
+            </div>
+        </div>
+    </section>
+    <section class="bookings-section">
+        <div class="toolbar">
+            <h2>Alla<br />Bokningar</h2>
+            <form @onsubmit="Search" @onsubmit:preventDefault>
+                <label class="search-box"><span>⌕</span><input @bind="search" placeholder="Sök företag, namn eller reg-nr..." /></label>
+                <label class="date-box"><span>□</span><input type="date" @bind="filterDate" /></label>
+                <button class="search-button" type="submit">Sök</button>
+                @if (!string.IsNullOrWhiteSpace(search) || filterDate.HasValue) { <button class="clear-button" type="button" @onclick="ClearFilters">Visa alla</button> }
+            </form>
+        </div>
+        <div class="table-card"><table>
+            <thead><tr><th>DATUM &amp; TID</th><th>KUND/FÖRETAG</th><th>KONTAKT</th><th>BIL/TJÄNST</th><th>ANTECKNINGAR</th><th>ÅTGÄRDER</th></tr></thead>
+            <tbody>
+            @if (!dashboard.RecentBookings.Any()) { <tr><td colspan="6" class="empty">Inga bokningar hittades.</td></tr> }
+            else
+            {
+                @foreach (var item in dashboard.RecentBookings)
+                {
+                    <tr>
+                        <td><strong>@item.BookingDate.ToString("MMM dd, yyyy")</strong><small>@item.TimeSlot.ToString(@"hh\:mm")</small></td>
+                        <td><span>@item.CustomerName</span>@if (!string.IsNullOrEmpty(item.CompanyName)) { <small class="teal">▣ @item.CompanyName</small> }</td>
+                        <td><span>@item.PhoneNumber</span><small>@item.Email</small></td>
+                        <td><b class="plate">@item.CarPlateNumber</b><small class="service">@(item.Service?.Name ?? "Okänd")</small><small class="price">@item.Service?.Price.ToString("N0") kr</small></td>
+                        <td><small class="notes">@(string.IsNullOrWhiteSpace(item.Notes) ? "–" : item.Notes)</small></td>
+                        <td><div class="actions"><a href="admin/bookings/@item.Id/edit" aria-label="Redigera"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.15.15a.5.5 0 0 1 .7 0l3 3a.5.5 0 0 1 0 .7l-10 10a.5.5 0 0 1-.2.12l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .12-.2l10-10ZM11.21 2.5 13.5 4.79 14.79 3.5 12.5 1.21 11.21 2.5Zm1.58 3L10.5 3.21 3 10.71V12h1.29l7.5-7.5Z"/></svg></a><button @onclick="() => RequestDelete(item)" aria-label="Ta bort"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2h4l.5-1h4l.5 1h4v1ZM4.12 4 4 4.06V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.06L11.88 4H4.12Z"/></svg></button></div></td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table></div>
+    </section>
+}
+
+@if (pendingDelete is not null)
+{
+    <div class="modal-backdrop" @onclick="CancelDelete">
+        <section class="delete-modal" role="alertdialog" aria-modal="true" aria-labelledby="delete-title" @onclick:stopPropagation>
+            <button class="modal-close" type="button" @onclick="CancelDelete" aria-label="Stäng">×</button>
+            <div class="warning-icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8.98 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.71c.889 0 1.438-.99.98-1.767L8.98 1.566ZM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5Zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg></div>
+            <h2 id="delete-title">Ta bort bokning?</h2>
+            <p>Du håller på att ta bort bokningen för <strong>@pendingDelete.CustomerName</strong>.</p>
+            <div class="booking-summary"><span>Datum</span><strong>@pendingDelete.BookingDate.ToString("yyyy-MM-dd")</strong><span>Tid</span><strong>@pendingDelete.TimeSlot.ToString(@"hh\:mm")</strong></div>
+            <p class="modal-note">Åtgärden kan inte ångras.</p>
+            <div class="modal-actions"><button type="button" @onclick="CancelDelete">Avbryt</button><button class="confirm-delete" type="button" disabled="@deleting" @onclick="ConfirmDelete">@(deleting ? "Tar bort…" : "Ta bort bokning")</button></div>
+        </section>
+    </div>
+}
 
 @code {
- private AdminDashboardViewModel? dashboard; private bool unauthorized;
- protected override async Task OnInitializedAsync()
- {
-   await LoadDashboard();
- }
- private async Task LoadDashboard()
- {
-   var response = await Http.GetAsync("api/admin/dashboard"); unauthorized = response.StatusCode == System.Net.HttpStatusCode.Unauthorized;
-   if (response.IsSuccessStatusCode) dashboard = await response.Content.ReadFromJsonAsync<AdminDashboardViewModel>();
- }
- private async Task Delete(CarWashStation.Models.Booking booking)
- {
-   var confirmed = await JS.InvokeAsync<bool>("confirm", $"Ta bort bokningen för {booking.CustomerName} den {booking.BookingDate:yyyy-MM-dd}?");
-   if (!confirmed) return;
-   var response = await Http.DeleteAsync($"api/admin/bookings/{booking.Id}");
-   if (response.IsSuccessStatusCode) await LoadDashboard();
- }
+    private AdminDashboardViewModel? dashboard;
+    private bool unauthorized;
+    private string? search;
+    private DateTime? filterDate;
+    private CarWashStation.Models.Booking? pendingDelete;
+    private bool deleting;
+    private string Revenue => dashboard!.MonthlyRevenue >= 1000 ? $"{dashboard.MonthlyRevenue / 1000:0.#}k" : $"{dashboard.MonthlyRevenue:0}";
+    protected override async Task OnInitializedAsync() => await LoadDashboard();
+    private async Task LoadDashboard()
+    {
+        var parameters = new List<string>();
+        if (!string.IsNullOrWhiteSpace(search)) parameters.Add($"search={Uri.EscapeDataString(search)}");
+        if (filterDate.HasValue) parameters.Add($"date={filterDate:yyyy-MM-dd}");
+        var response = await Http.GetAsync("api/admin/dashboard" + (parameters.Count > 0 ? "?" + string.Join("&", parameters) : ""));
+        unauthorized = response.StatusCode == System.Net.HttpStatusCode.Unauthorized;
+        if (response.IsSuccessStatusCode) dashboard = await response.Content.ReadFromJsonAsync<AdminDashboardViewModel>();
+    }
+    private async Task Search() => await LoadDashboard();
+    private async Task ClearFilters() { search = null; filterDate = null; await LoadDashboard(); }
+    private void RequestDelete(CarWashStation.Models.Booking booking) => pendingDelete = booking;
+    private void CancelDelete() { if (!deleting) pendingDelete = null; }
+    private async Task ConfirmDelete()
+    {
+        if (pendingDelete is null) return;
+        deleting = true;
+        if ((await Http.DeleteAsync($"api/admin/bookings/{pendingDelete.Id}")).IsSuccessStatusCode) { pendingDelete = null; await LoadDashboard(); Toasts.Success("Bokningen har tagits bort."); }
+        else Toasts.Error("Bokningen kunde inte tas bort.");
+        deleting = false;
+    }
 }

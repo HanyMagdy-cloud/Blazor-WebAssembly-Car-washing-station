@@ -1,0 +1,20 @@
+.services-page { width: min(1320px, 90vw); margin: auto; padding: 4.5rem 0 6rem; }
+.services-page > header { text-align: center; margin-bottom: 3.5rem; }
+.services-page h1 { margin: 0 0 1rem; color: #0d284f; font-size: clamp(2.4rem, 7vw, 4rem); }
+.services-page > header p { margin: 0; color: #6b7478; font-size: clamp(1rem, 2vw, 1.3rem); }
+.service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3rem; align-items: stretch; }
+.service-card { display: flex; flex-direction: column; min-width: 0; padding: 0; overflow: hidden; border: 0; border-radius: 1.3rem; background: #fff; box-shadow: 0 10px 30px rgba(13,43,62,.07); transition: transform .35s, box-shadow .35s; }
+.service-card:hover { transform: translateY(-9px); box-shadow: 0 20px 42px rgba(13,43,62,.14); }
+.image-wrap { height: 240px; padding-top: 1.5rem; overflow: hidden; background: #fff; }
+.image-wrap img { width: 100%; height: 100%; display: block; object-fit: fill; transition: transform .55s; }
+.service-card:hover img { transform: scale(1.06); }
+.card-body { display: flex; flex: 1; flex-direction: column; align-items: center; padding: 1.7rem; text-align: center; }
+.card-body h2 { margin: 0 0 1rem; color: #111b22; font-size: 1.55rem; }
+.card-body strong { color: #1d7575; font-size: 1.25rem; }
+.card-body p { flex: 1; margin: 1.5rem 0; color: #46545b; line-height: 1.55; }
+.card-body a { width: 100%; padding: .85rem 1rem; border-radius: 99px; background: #3bbfbf; color: #fff; text-decoration: none; font-weight: 850; box-shadow: 0 4px 10px rgba(59,191,191,.24); }
+.card-body a:hover { background: #2a9a9a; }
+.loading { text-align: center; }
+.skeleton{position:relative;overflow:hidden;display:block;background:#dce9ec}.skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.72),transparent);animation:shimmer 1.4s infinite}.image-skeleton{height:240px}.skeleton-card .card-body{gap:1.1rem}.title-skeleton{width:62%;height:26px;border-radius:99px}.price-skeleton{width:30%;height:20px;border-radius:99px}.text-skeleton{width:90%;height:46px;border-radius:.5rem}.button-skeleton{width:100%;height:48px;margin-top:auto;border-radius:99px}@keyframes shimmer{to{transform:translateX(100%)}}
+@media(max-width: 1000px) { .service-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 2rem; } }
+@media(max-width: 620px) { .services-page { width: min(94vw, 440px); padding-top: 3rem; } .service-grid { grid-template-columns: 1fr; gap: 1.5rem; } .image-wrap { height: 220px; } }

@@ -1,27 +1,36 @@
 @page "/admin/bookings/{Id:int}/edit"
 @inject HttpClient Http
 @inject NavigationManager Navigation
+@inject CarWashStation.Client.Services.ToastService Toasts
 @using CarWashStation.Models
 
 <PageTitle>Redigera bokning</PageTitle>
-<section class="page narrow"><p><a href="admin">← Tillbaka till administration</a></p><h1>Redigera bokning</h1>
-@if (unauthorized) { <p>Du behöver <a href="login">logga in</a>.</p> }
-else if (booking is null) { <p>Laddar…</p> }
-else {
- <EditForm Model="booking" OnValidSubmit="Save"><DataAnnotationsValidator /><ValidationSummary />
-   <label>Namn<InputText @bind-Value="booking.CustomerName" /></label>
-   <label>E-post<InputText @bind-Value="booking.Email" /></label>
-   <label>Telefon<InputText @bind-Value="booking.PhoneNumber" /></label>
-   <label>Registreringsnummer<InputText @bind-Value="booking.CarPlateNumber" /></label>
-   <label>Företag<InputText @bind-Value="booking.CompanyName" /></label>
-   <label>Tjänst<InputSelect @bind-Value="booking.ServiceId">@foreach (var service in services) { <option value="@service.Id">@service.Name – @service.Price.ToString("0") kr</option> }</InputSelect></label>
-   <label>Datum<InputDate @bind-Value="booking.BookingDate" /></label>
-   <label>Tid (HH:mm)<InputText @bind-Value="timeText" placeholder="10:30" /></label>
-   <label>Anteckningar<InputTextArea @bind-Value="booking.Notes" /></label>
-   <button class="button" disabled="@saving">@(saving ? "Sparar…" : "Spara ändringar")</button>
- </EditForm>
- @if (!string.IsNullOrWhiteSpace(error)) { <p class="error">@error</p> }
-}
+<section class="edit-page">
+    <header><a href="admin">← Tillbaka</a><h1>Redigera <strong>bokning</strong></h1></header>
+    @if (unauthorized) { <div class="notice">Du behöver <a href="login">logga in</a>.</div> }
+    else if (booking is null) { <div class="notice">Laddar…</div> }
+    else
+    {
+        <div class="edit-card">
+            <h2>Bokningsdetaljer</h2>
+            <EditForm Model="booking" OnValidSubmit="Save">
+                <DataAnnotationsValidator /><ValidationSummary class="validation" />
+                <div class="form-grid">
+                    <label>KUNDNAMN<InputText @bind-Value="booking.CustomerName" /></label>
+                    <label>E-POST<InputText type="email" @bind-Value="booking.Email" /></label>
+                    <label>TELEFONNUMMER<InputText @bind-Value="booking.PhoneNumber" /></label>
+                    <label>REGISTRERINGSNUMMER<InputText @bind-Value="booking.CarPlateNumber" /></label>
+                    <label class="wide">TJÄNST<InputSelect @bind-Value="booking.ServiceId">@foreach (var service in services) { <option value="@service.Id">@service.Name</option> }</InputSelect></label>
+                    <label>DATUM<InputDate @bind-Value="booking.BookingDate" /></label>
+                    <label>TID<InputText type="time" @bind-Value="timeText" /></label>
+                    <label>FÖRETAGSNAMN (VALFRITT)<InputText @bind-Value="booking.CompanyName" /></label>
+                    <label class="wide">ANTECKNINGAR (VALFRITT)<InputTextArea @bind-Value="booking.Notes" /></label>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(error)) { <p class="error">@error</p> }
+                <div class="form-actions"><button type="submit" disabled="@saving">@(saving ? "Sparar…" : "Spara ändringar")</button><a href="admin">Avbryt</a></div>
+            </EditForm>
+        </div>
+    }
 </section>
 
 @code {
@@ -30,9 +39,7 @@ else {
  private List<Service> services = [];
  private string timeText = "";
  private string? error;
- private bool saving;
- private bool unauthorized;
-
+ private bool saving, unauthorized;
  protected override async Task OnParametersSetAsync()
  {
    var response = await Http.GetAsync($"api/admin/bookings/{Id}");
@@ -48,7 +55,7 @@ else {
    booking.TimeSlot = time; booking.Service = null; saving = true; error = null;
    var response = await Http.PutAsJsonAsync($"api/admin/bookings/{booking.Id}", booking);
    saving = false;
-   if (response.IsSuccessStatusCode) Navigation.NavigateTo("admin");
-   else error = await response.Content.ReadAsStringAsync();
+   if (response.IsSuccessStatusCode) { Toasts.Success("Bokningen har uppdaterats."); Navigation.NavigateTo("admin"); }
+   else { error = await response.Content.ReadAsStringAsync(); Toasts.Error("Ändringarna kunde inte sparas."); }
  }
 }

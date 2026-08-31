@@ -1,48 +1,55 @@
 @page "/booking"
 @inject HttpClient Http
+@inject CarWashStation.Client.Services.ToastService Toasts
 @using CarWashStation.Models
 
-<PageTitle>Boka</PageTitle>
-<section class="page narrow"><h1>Boka bilvård</h1>
-<EditForm Model="booking" OnValidSubmit="Submit"><DataAnnotationsValidator /><ValidationSummary />
-    <label>Namn<InputText @bind-Value="booking.CustomerName" /></label>
-    <label>E-post<InputText @bind-Value="booking.Email" /></label>
-    <label>Telefon<InputText @bind-Value="booking.PhoneNumber" /></label>
-    <label>Registreringsnummer<InputText @bind-Value="booking.CarPlateNumber" /></label>
-    <label>Företag (valfritt)<InputText @bind-Value="booking.CompanyName" /></label>
-    <label>Tjänst<InputSelect @bind-Value="booking.ServiceId"><option value="0">Välj tjänst</option>@foreach (var item in services) { <option value="@item.Id">@item.Name – @item.Price.ToString("0") kr</option> }</InputSelect></label>
-    <label>Datum<InputDate @bind-Value="booking.BookingDate" @bind-Value:after="LoadSlots" min="@DateTime.Today.ToString("yyyy-MM-dd")" /></label>
-    <label>Tid<select @bind="selectedSlot"><option value="">Välj tid</option>@foreach (var slot in slots) { <option value="@slot">@slot</option> }</select></label>
-    <label>Anteckningar<InputTextArea @bind-Value="booking.Notes" /></label>
-    <button class="button" disabled="@submitting">@(submitting ? "Skickar…" : "Bekräfta bokning")</button>
-</EditForm>
-@if (!string.IsNullOrWhiteSpace(message)) { <p class="message">@message</p> }
-</section>
+<PageTitle>Boka bilvård</PageTitle>
+<section class="booking-page"><div class="booking-card">
+    <header><span>BOKA ONLINE</span><h1>Boka bilvård</h1><div class="progress"><i class="active">1</i><b></b><i class="@(step >= 2 ? "active" : null)">2</i></div></header>
+    @if (step == 3)
+    {
+        <section class="success-view"><div>✓</div><h2>Bokningen är klar!</h2><p>En bekräftelse har skickats med dina bokningsuppgifter.</p><a href="/">Tillbaka till startsidan</a></section>
+    }
+    else
+    {
+        <EditForm Model="booking" OnValidSubmit="Submit"><DataAnnotationsValidator /><ValidationSummary class="validation" />
+        @if (step == 1)
+        {
+            <section class="form-section step-panel"><span class="step-label">STEG 1 AV 2</span><h2>Välj dag och tid</h2>
+                <label class="date-label">VÄLJ DATUM<InputDate @bind-Value="booking.BookingDate" @bind-Value:after="LoadSlots" min="@DateTime.Today.ToString("yyyy-MM-dd")" /></label>
+                <span class="slots-label">TILLGÄNGLIGA TIDER</span>
+                @if (loadingSlots) { <p class="no-slots">Hämtar lediga tider…</p> }
+                else if (slots.Count == 0) { <p class="no-slots">Inga tider tillgängliga för detta datum.</p> }
+                else { <div class="slots-grid">@foreach (var slot in slots) { <button type="button" class="@(selectedSlot == slot ? "selected" : null)" @onclick="() => selectedSlot = slot">@slot</button> }</div> }
+                @if (!string.IsNullOrWhiteSpace(message)) { <p class="message failure">@message</p> }
+                <button class="next-button" type="button" disabled="@string.IsNullOrEmpty(selectedSlot)" @onclick="GoToDetails">Nästa: Dina uppgifter →</button>
+            </section>
+        }
+        else
+        {
+            <section class="form-section step-panel"><span class="step-label">STEG 2 AV 2</span><h2>Dina uppgifter</h2><div class="selection-summary"><span>@booking.BookingDate.ToString("ddd, dd MMM yyyy")</span><strong>kl. @selectedSlot</strong></div><div class="form-grid">
+                <label>NAMN<InputText @bind-Value="booking.CustomerName" /></label><label>E-POST<InputText type="email" @bind-Value="booking.Email" /></label>
+                <label>TELEFONNUMMER<InputText @bind-Value="booking.PhoneNumber" /></label><label>REGISTRERINGSNUMMER<InputText @bind-Value="booking.CarPlateNumber" /></label>
+                <label>FÖRETAGSNAMN (VALFRITT)<InputText @bind-Value="booking.CompanyName" /></label><label class="wide">VÄLJ TJÄNST<InputSelect @bind-Value="booking.ServiceId"><option value="0">Välj en tjänst...</option>@foreach (var item in services) { <option value="@item.Id">@item.Name (@item.Price.ToString("0") kr)</option> }</InputSelect></label>
+                <label class="wide">ANTECKNINGAR (VALFRITT)<InputTextArea @bind-Value="booking.Notes" /></label>
+            </div>@if (!string.IsNullOrWhiteSpace(message)) { <p class="message failure">@message</p> }<div class="step-actions"><button type="button" @onclick="() => step = 1">← Tillbaka</button><button class="confirm-button" type="submit" disabled="@submitting">@(submitting ? "Bokar…" : "Bekräfta bokning")</button></div></section>
+        }
+        </EditForm>
+    }
+</div></section>
 
 @code {
     private CarWashStation.Models.Booking booking = new() { BookingDate = DateTime.Today.AddDays(1) };
-    private List<Service> services = [];
-    private List<string> slots = [];
-    private string selectedSlot = "";
-    private string? message;
-    private bool submitting;
-
-    protected override async Task OnInitializedAsync()
-    {
-        services = await Http.GetFromJsonAsync<List<Service>>("api/bookings/services") ?? [];
-        await LoadSlots();
-    }
-    private async Task LoadSlots()
-    {
-        slots = await Http.GetFromJsonAsync<List<string>>($"api/bookings/available-slots?date={booking.BookingDate:yyyy-MM-dd}") ?? [];
-        selectedSlot = "";
-    }
+    private List<Service> services = []; private List<string> slots = []; private string selectedSlot = ""; private string? message;
+    private bool submitting, loadingSlots; private int step = 1;
+    protected override async Task OnInitializedAsync() { services = await Http.GetFromJsonAsync<List<Service>>("api/bookings/services") ?? []; await LoadSlots(); }
+    private async Task LoadSlots() { loadingSlots=true; slots = await Http.GetFromJsonAsync<List<string>>($"api/bookings/available-slots?date={booking.BookingDate:yyyy-MM-dd}") ?? []; selectedSlot=""; loadingSlots=false; }
+    private void GoToDetails() { if (!string.IsNullOrEmpty(selectedSlot)) { message=null; step=2; } }
     private async Task Submit()
     {
-        if (!TimeSpan.TryParse(selectedSlot, out var time)) { message = "Välj en ledig tid."; return; }
-        booking.TimeSlot = time; submitting = true; message = null;
-        var response = await Http.PostAsJsonAsync("api/bookings", booking);
-        message = response.IsSuccessStatusCode ? "Tack! Din bokning är bekräftad." : await response.Content.ReadAsStringAsync();
-        submitting = false;
+        if (!TimeSpan.TryParse(selectedSlot, out var time)) { message="Välj en ledig tid."; step=1; return; }
+        booking.TimeSlot=time; submitting=true; message=null; var response=await Http.PostAsJsonAsync("api/bookings",booking); submitting=false;
+        if (response.IsSuccessStatusCode) { Toasts.Success("Bokningen har bekräftats."); step=3; }
+        else { message=await response.Content.ReadAsStringAsync(); Toasts.Error("Bokningen kunde inte genomföras."); }
     }
 }

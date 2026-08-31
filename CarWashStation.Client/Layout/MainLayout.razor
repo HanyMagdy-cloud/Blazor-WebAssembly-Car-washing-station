@@ -1,5 +1,35 @@
 @inherits LayoutComponentBase
 
 <NavMenu />
+<ToastHost />
 <main>@Body</main>
-<footer>© @DateTime.Now.Year Årstabilvård</footer>
+<footer class="site-footer">
+    <div class="footer-main">
+        <section class="footer-about">
+            <div class="footer-brand"><span class="car-icon" aria-hidden="true">▰</span><div><strong>ÅRSTA</strong><small>BILVÅRD</small></div></div>
+            <p>Professionell bilvård i hjärtat av Årsta. Noggrannhet och premiumprodukter — ett resultat som glänser.</p>
+        </section>
+        <section>
+            <h2>SNABBLÄNKAR</h2>
+            <nav class="footer-links">
+                <a href=""><span>›</span> Hem</a>
+                <a href="services"><span>›</span> Tjänster</a>
+                <a href="contact"><span>›</span> Kontakta oss</a>
+                <a class="booking-link" href="booking">▣ Boka tid →</a>
+            </nav>
+        </section>
+        <section>
+            <h2>ÖPPETTIDER</h2>
+            <div class="hours"><p><span>Mån – Fre</span><strong>08:00 – 16:00</strong></p><p><span>Lördag</span><em>Stängt</em></p><p><span>Söndag</span><em>Stängt</em></p></div>
+        </section>
+        <section>
+            <h2>HITTA OSS</h2>
+            <address>
+                <p><span>●</span><span>Byängsgränd 10<br />120 40 Årsta</span></p>
+                <p><span>●</span><a href="tel:087220216">087220216</a></p>
+                <p><span>✉</span><a href="mailto:rafatnagah83@hotmail.com">rafatnagah83@hotmail.com</a></p>
+            </address>
+        </section>
+    </div>
+    <div class="footer-bottom"><span>© @DateTime.Now.Year Årsta Bilvård. Alla rättigheter förbehållna.</span><a href="privacy">Integritetspolicy</a></div>
+</footer>

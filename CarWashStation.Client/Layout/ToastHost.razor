@@ -1,0 +1,19 @@
+@implements IDisposable
+@inject CarWashStation.Client.Services.ToastService Toasts
+
+<div class="toast-stack" aria-live="polite" aria-atomic="true">
+    @foreach (var toast in Toasts.Messages)
+    {
+        <div class="toast @toast.Kind.ToString().ToLowerInvariant()">
+            <span class="toast-icon">@(toast.Kind == CarWashStation.Client.Services.ToastKind.Success ? "✓" : toast.Kind == CarWashStation.Client.Services.ToastKind.Error ? "!" : "i")</span>
+            <span>@toast.Text</span>
+            <button @onclick="() => Toasts.Remove(toast.Id)" aria-label="Stäng">×</button>
+        </div>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized() => Toasts.Changed += OnChanged;
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Toasts.Changed -= OnChanged;
+}

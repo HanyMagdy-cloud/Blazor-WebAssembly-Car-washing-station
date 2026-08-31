@@ -1,0 +1,98 @@
+@page "/admin/schema-kontroll"
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject CarWashStation.Client.Services.ToastService Toasts
+@using CarWashStation.Models
+
+<PageTitle>Schema kontroll</PageTitle>
+<section class="schedule-hero"><div><span>ADMINISTRATIONSPANEL</span><h1>Schema <strong>kontroll</strong></h1><p>Här kan du stänga av specifika dagar eller tider för bokning.</p></div></section>
+
+@if (unauthorized)
+{
+    <section class="schedule-grid"><div class="panel form-panel"><p>Du behöver <a href="login">logga in</a> som administratör.</p></div></section>
+}
+else
+{
+    <section class="schedule-grid">
+        <div class="panel form-panel">
+            <h2>Lägg till blockering</h2>
+            <EditForm Model="form" OnValidSubmit="Save">
+                <DataAnnotationsValidator />
+                <label>Datum<InputDate @bind-Value="form.Date" min="@DateTime.Today.ToString("yyyy-MM-dd")" /></label>
+                <label>Tid (valfritt)
+                    <InputSelect @bind-Value="form.TimeSlot">
+                        <option value="">Hela dagen</option>
+                        @foreach (var time in Times) { <option value="@time">@time</option> }
+                    </InputSelect>
+                    <small>Lämna tom för att stänga hela dagen.</small>
+                </label>
+                <label>Anledning (valfritt)<InputText @bind-Value="form.Reason" placeholder="T.ex. Helgdag" /></label>
+                <button class="save-button" type="submit" disabled="@saving">@(saving ? "Sparar…" : "Spara blockering")</button>
+            </EditForm>
+            @if (!string.IsNullOrEmpty(error)) { <p class="error">@error</p> }
+        </div>
+        <div class="panel list-panel">
+            <header><h2>Aktiva blockeringar</h2><span>@blockedSlots.Count st</span></header>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Datum</th><th>Omfattning</th><th>Anledning</th><th>Åtgärd</th></tr></thead>
+                <tbody>
+                @if (loading) { @for(var i=0;i<4;i++){<tr class="skeleton-row"><td><i></i></td><td><i></i></td><td><i></i></td><td><i></i></td></tr>} }
+                else if (blockedSlots.Count == 0) { <tr><td colspan="4" class="empty"><span>✓</span>Inga tider är blockerade just nu.</td></tr> }
+                else
+                {
+                    @foreach (var slot in blockedSlots)
+                    {
+                        <tr>
+                            <td><strong>@slot.Date.ToString("ddd, dd MMM yyyy")</strong></td>
+                            <td><span class="scope @(slot.IsFullDay ? "day" : "time")">@(slot.IsFullDay ? "Hela dagen" : $"Kl. {slot.TimeSlot:hh\\:mm}")</span></td>
+                            <td>@(string.IsNullOrWhiteSpace(slot.Reason) ? "–" : slot.Reason)</td>
+                            <td><button class="remove-button" @onclick="() => Remove(slot)">Ta bort</button></td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table></div>
+        </div>
+    </section>
+}
+
+@code {
+    private static readonly string[] Times = Enumerable.Range(0, 17).Select(i => TimeSpan.FromHours(8).Add(TimeSpan.FromMinutes(i * 30)).ToString(@"hh\:mm")).ToArray();
+    private readonly List<BlockedSlot> blockedSlots = [];
+    private BlockForm form = new() { Date = DateTime.Today };
+    private bool loading = true, saving, unauthorized;
+    private string? error;
+    protected override async Task OnInitializedAsync() => await Load();
+    private async Task Load()
+    {
+        loading = true;
+        var response = await Http.GetAsync("api/admin/blocked-slots");
+        unauthorized = response.StatusCode == System.Net.HttpStatusCode.Unauthorized;
+        if (response.IsSuccessStatusCode)
+        {
+            blockedSlots.Clear();
+            blockedSlots.AddRange(await response.Content.ReadFromJsonAsync<List<BlockedSlot>>() ?? []);
+        }
+        loading = false;
+    }
+    private async Task Save()
+    {
+        saving = true; error = null;
+        var response = await Http.PostAsJsonAsync("api/admin/blocked-slots", new BlockSlotRequest(form.Date, form.TimeSlot, form.Reason));
+        if (response.IsSuccessStatusCode) { form = new BlockForm { Date = DateTime.Today }; await Load(); Toasts.Success("Blockeringen har sparats."); }
+        else { error = (await response.Content.ReadAsStringAsync()).Trim('"'); Toasts.Error(error); }
+        saving = false;
+    }
+    private async Task Remove(BlockedSlot slot)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", "Vill du ta bort denna blockering?")) return;
+        if ((await Http.DeleteAsync($"api/admin/blocked-slots/{slot.Id}")).IsSuccessStatusCode) { await Load(); Toasts.Success("Blockeringen har tagits bort."); }
+        else Toasts.Error("Blockeringen kunde inte tas bort.");
+    }
+    private sealed class BlockForm
+    {
+        [System.ComponentModel.DataAnnotations.Required] public DateTime Date { get; set; }
+        public string? TimeSlot { get; set; }
+        public string? Reason { get; set; }
+    }
+}

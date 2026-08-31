@@ -1,15 +1,25 @@
 @page "/services"
 @inject HttpClient Http
 @using CarWashStation.Models
-@using System.Net.Http.Json
 
 <PageTitle>Tjänster</PageTitle>
-<section class="page"><h1>Våra tjänster</h1>
-@if (services is null) { <p>Laddar…</p> }
-else { <div class="cards">@foreach (var service in services) { <article class="service-card"><img src="images/@(service.Id).png" alt="@service.Name" /><div><h2>@service.Name</h2><p>@service.Description</p><strong>@service.Price.ToString("0") kr</strong></div></article> }</div> }
+<section class="services-page">
+    <header><h1>Våra Tjänster</h1><p>Upptäck våra premiumtjänster för en skinande ren och välvårdad bil.</p></header>
+    @if (services is null) { <div class="service-grid">@for(var i=0;i<6;i++){<article class="service-card skeleton-card"><div class="skeleton image-skeleton"></div><div class="card-body"><i class="skeleton title-skeleton"></i><i class="skeleton price-skeleton"></i><i class="skeleton text-skeleton"></i><i class="skeleton button-skeleton"></i></div></article>}</div> }
+    else
+    {
+        <div class="service-grid">
+        @foreach (var service in services)
+        {
+            <article class="service-card"><div class="image-wrap"><img src="images/@(service.Id).png" alt="@service.Name" /></div><div class="card-body"><h2>@DisplayName(service)</h2><strong>@DisplayPrice(service)</strong><p>@service.Description</p><a href="booking">Boka nu</a></div></article>
+        }
+        </div>
+    }
 </section>
 
 @code {
     private List<Service>? services;
     protected override async Task OnInitializedAsync() => services = await Http.GetFromJsonAsync<List<Service>>("api/bookings/services");
+    private static string DisplayName(Service service) => service.Id switch { 2 => "In & utvändig tvätt", 7 => "Däckförvaring", 10 => "Laga punktering", 11 => "Däckmontering", _ => service.Name ?? "Tjänst" };
+    private static string DisplayPrice(Service service) => service.Id switch { 3 => $"fr {service.Price:0} kr", 7 => $"{service.Price:0} kr / säsong", 11 => $"{service.Price:0} kr / däck", _ => $"{service.Price:0} kr" };
 }

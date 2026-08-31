@@ -1,10 +1,52 @@
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
 <header class="site-header">
-    <NavLink class="brand" href="" Match="NavLinkMatch.All"><img src="images/logo.png" alt="Årsta bilvård" /></NavLink>
-    <nav>
-        <NavLink href="" Match="NavLinkMatch.All">Hem</NavLink>
-        <NavLink href="services">Tjänster</NavLink>
-        <NavLink href="booking">Boka</NavLink>
-        <NavLink href="contact">Kontakt</NavLink>
-        <NavLink href="admin">Admin</NavLink>
-    </nav>
+    <div class="nav-shell">
+        <a class="brand" href="/" aria-label="Årsta Bilvård startsida">
+            <span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.2S5.4 10 5.4 15.3a6.6 6.6 0 0 0 13.2 0C18.6 10 12 2.2 12 2.2Z" fill="currentColor"/><path d="M9 15.3c0-2.3 1.5-4.7 3.2-7" fill="none" stroke="#36b9bb" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <span class="brand-copy"><strong>ÅRSTA</strong><small>BILVÅRD</small></span>
+        </a>
+        <button class="menu-toggle" type="button" @onclick="() => menuOpen = !menuOpen" aria-label="Öppna meny" aria-expanded="@menuOpen">☰</button>
+        <div class="nav-content @(menuOpen ? "open" : null)">
+            <nav class="main-links" @onclick="CloseMenu">
+                <NavLink href="" Match="NavLinkMatch.All">Hem</NavLink>
+                <NavLink href="services">Tjänster</NavLink>
+                <NavLink href="contact">Kontakta oss</NavLink>
+                @if (isAuthenticated)
+                {
+                    <NavLink class="admin-link" href="admin">Alla bokningar</NavLink>
+                    <NavLink class="admin-link" href="admin/schema-kontroll">Schema kontroll</NavLink>
+                }
+            </nav>
+            <div class="nav-actions">
+                @if (isAuthenticated)
+                {
+                    <span class="admin-badge">Inloggad som Admin</span>
+                    <button class="logout" type="button" @onclick="Logout">Logga ut</button>
+                }
+                else
+                {
+                    <NavLink class="admin-login" href="login">Admin-login</NavLink>
+                }
+                <NavLink class="book-button" href="booking">Boka tid</NavLink>
+            </div>
+        </div>
+    </div>
 </header>
+
+@code {
+    private bool isAuthenticated;
+    private bool menuOpen;
+    protected override async Task OnInitializedAsync()
+    {
+        try { isAuthenticated = (await Http.GetAsync("api/account/status")).IsSuccessStatusCode; }
+        catch { isAuthenticated = false; }
+    }
+    private void CloseMenu() => menuOpen = false;
+    private async Task Logout()
+    {
+        await Http.PostAsync("api/account/logout", null);
+        Navigation.NavigateTo("", forceLoad: true);
+    }
+}
