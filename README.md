@@ -6,7 +6,7 @@ Car-wash booking system split into three .NET 10 projects so the UI and API can 
 
 ```text
 CarWashStation.Client/   Blazor WebAssembly UI (Azure Static Web Apps)
-CarWashStation.Api/      ASP.NET Core Web API, EF Core, email and SMS (Azure App Service)
+CarWashStation.Api/      ASP.NET Core Web API, EF Core, and email (Azure App Service)
 CarWashStation.Shared/   Models and API contracts shared by Client and API
 ```
 
@@ -43,7 +43,6 @@ Publish `CarWashStation.Api/CarWashStation.Api.csproj`. In App Service Configura
 - `ConnectionStrings__DefaultConnection`
 - `Admin__Email` and `Admin__Password`
 - `EmailSettings__SmtpUser`, `EmailSettings__SmtpPass`, and `EmailSettings__FromEmail`
-- Twilio settings if SMS is enabled
 - `Cors__AllowedOrigins__0=https://YOUR-STATIC-APP.azurestaticapps.net`
 - Another CORS entry for the custom UI domain
 

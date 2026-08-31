@@ -11,13 +11,11 @@ namespace CarWashStation.Controllers
     public class BookingController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly ISmsService _smsService;
         private readonly IEmailService _emailService;
 
-        public BookingController(ApplicationDbContext context, ISmsService smsService, IEmailService emailService)
+        public BookingController(ApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
-            _smsService = smsService;
             _emailService = emailService;
         }
 
@@ -123,16 +121,6 @@ namespace CarWashStation.Controllers
 
                 _context.Bookings.Add(booking);
                 await _context.SaveChangesAsync();
-
-                try 
-                {
-                   string messageBody = $"Hi {booking.CustomerName}, your car wash is confirmed for {booking.BookingDate:MMM dd} at {booking.TimeSlot:hh\\:mm}. See you then!";
-                   await _smsService.SendSmsAsync(booking.PhoneNumber!, messageBody);
-                }
-                catch (Exception ex)
-                {
-                   Console.WriteLine($"Failed to send SMS: {ex.Message}");
-                }
 
                 try
                 {
