@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace CarWashStation.Models
 {
@@ -35,6 +36,7 @@ namespace CarWashStation.Models
         [DataType(DataType.Date)]
         [Display(Name = "Booking Date")]
         [FutureOrToday(ErrorMessage = "Bokningsdatum kan inte vara i det förflutna.")]
+        [JsonConverter(typeof(BookingDateJsonConverter))]
         public DateTime BookingDate { get; set; }
 
         [Display(Name = "Time Slot")]
@@ -53,7 +55,7 @@ namespace CarWashStation.Models
         {
             if (value is DateTime dateTime)
             {
-                if (dateTime.Date < DateTime.Today)
+                if (dateTime.Date < BookingTime.Now.Date)
                 {
                     return new ValidationResult(ErrorMessage ?? "Datumet kan inte vara i det förflutna.");
                 }

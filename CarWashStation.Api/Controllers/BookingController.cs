@@ -22,8 +22,9 @@ namespace CarWashStation.Controllers
         [HttpGet("available-slots")]
         public async Task<IActionResult> GetAvailableSlots(DateTime date)
         {
+            var now = BookingTime.Now;
             // Don't show slots for past dates
-            if (date.Date < DateTime.Today)
+            if (date.Date < now.Date)
             {
                 return Json(new List<string>());
             }
@@ -40,10 +41,9 @@ namespace CarWashStation.Controllers
                 .ToList();
 
             // Filter out past slots for today
-            if (date.Date == DateTime.Today)
+            if (date.Date == now.Date)
             {
-                var now = DateTime.Now.TimeOfDay;
-                allSlots = allSlots.Where(s => s > now).ToList();
+                allSlots = allSlots.Where(s => s > now.TimeOfDay).ToList();
             }
 
             var bookedSlots = await _context.Bookings
@@ -93,8 +93,8 @@ namespace CarWashStation.Controllers
                 }
 
                 // Extra server-side check for past dates/times
-                if (booking.BookingDate.Date < DateTime.Today || 
-                    (booking.BookingDate.Date == DateTime.Today && booking.TimeSlot < DateTime.Now.TimeOfDay))
+                var now = BookingTime.Now;
+                if (booking.BookingDate.Date.Add(booking.TimeSlot) <= now)
                 {
                     return BadRequest("Bokningstiden kan inte vara i det förflutna.");
                 }

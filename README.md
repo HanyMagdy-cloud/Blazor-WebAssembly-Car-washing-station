@@ -61,3 +61,12 @@ dotnet build CarWashStation.slnx
 ```
 
 The existing EF Core migrations remain in `CarWashStation.Api/Migrations`.
+
+Booking dates are calendar days in Stockholm, serialized as `yyyy-MM-dd`. Older
+clients sending ISO timestamps with offsets are supported without shifting the day.
+Availability and past-time validation use `Europe/Stockholm`, including daylight saving.
+Run the date regression checks with:
+
+```powershell
+dotnet run --project tests/BookingDateRegression
+```

@@ -16,7 +16,7 @@
         @if (step == 1)
         {
             <section class="form-section step-panel"><span class="step-label">STEG 1 AV 2</span><h2>Välj dag och tid</h2>
-                <label class="date-label">VÄLJ DATUM<InputDate @bind-Value="booking.BookingDate" @bind-Value:after="LoadSlots" min="@DateTime.Today.ToString("yyyy-MM-dd")" /></label>
+                <label class="date-label">VÄLJ DATUM<InputDate @bind-Value="booking.BookingDate" @bind-Value:after="LoadSlots" min="@BookingTime.Now.ToString("yyyy-MM-dd")" /></label>
                 <span class="slots-label">TILLGÄNGLIGA TIDER</span>
                 @if (loadingSlots) { <p class="no-slots">Hämtar lediga tider…</p> }
                 else if (slots.Count == 0) { <p class="no-slots">Inga tider tillgängliga för detta datum.</p> }
@@ -39,7 +39,7 @@
 </div></section>
 
 @code {
-    private CarWashStation.Models.Booking booking = new() { BookingDate = DateTime.Today.AddDays(1) };
+    private CarWashStation.Models.Booking booking = new() { BookingDate = BookingTime.Now.Date.AddDays(1) };
     private List<Service> services = []; private List<string> slots = []; private string selectedSlot = ""; private string? message;
     private bool submitting, loadingSlots; private int step = 1;
     protected override async Task OnInitializedAsync() { services = await Http.GetFromJsonAsync<List<Service>>("api/bookings/services") ?? []; await LoadSlots(); }
