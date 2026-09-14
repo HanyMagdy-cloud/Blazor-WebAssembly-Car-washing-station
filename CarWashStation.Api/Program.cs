@@ -1,6 +1,7 @@
 using CarWashStation.Data;
 using CarWashStation.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +9,13 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddTransient<IEmailService, BrevoEmailService>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication("AdminAuthentication")
+    .AddPolicyScheme("AdminAuthentication", null, options =>
+        options.ForwardDefaultSelector = context =>
+            context.Request.Headers.Authorization.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+                ? BearerTokenDefaults.AuthenticationScheme
+                : CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddBearerToken(options => options.BearerTokenExpiration = TimeSpan.FromHours(8))
     .AddCookie(options =>
     {
         options.Cookie.Name = "carwash.auth";
