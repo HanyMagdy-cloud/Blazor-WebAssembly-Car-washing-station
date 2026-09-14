@@ -12,6 +12,19 @@ CarWashStation.Shared/   Models and API contracts shared by Client and API
 
 Both executable projects reference `CarWashStation.Shared`; the client calls the API with `HttpClient`.
 
+## Admin sessions
+
+The client requests an ASP.NET Core protected bearer token using
+`api/account/login?useToken=true`. This supports Safari when the UI and API are
+on different sites and third-party cookies are blocked. Existing cookie clients
+remain supported. Deploy the API before deploying the updated client.
+
+Tokens expire after eight hours. Remember Me stores the token in local storage;
+otherwise it stays in session storage for the current tab. Both require login
+again after expiry. Logout removes the browser token; a copied token remains
+valid until expiry. Tokens are accessible to the site's JavaScript, so avoid
+untrusted scripts. No refresh-token endpoint is exposed.
+
 ## Local configuration
 
 Do not put credentials in `appsettings.json`. Configure the API with user-secrets or environment variables:

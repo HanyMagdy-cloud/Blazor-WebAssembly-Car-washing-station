@@ -1,5 +1,6 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
+@inject CarWashStation.Client.Services.AdminSession Session
 
 <header class="site-header">
     <div class="nav-shell">
@@ -46,7 +47,12 @@
     private void CloseMenu() => menuOpen = false;
     private async Task Logout()
     {
-        await Http.PostAsync("api/account/logout", null);
-        Navigation.NavigateTo("", forceLoad: true);
+        try { using var response = await Http.PostAsync("api/account/logout", null); }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException) { }
+        finally
+        {
+            await Session.ClearAsync();
+            Navigation.NavigateTo("", forceLoad: true);
+        }
     }
 }

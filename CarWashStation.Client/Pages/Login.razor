@@ -1,6 +1,7 @@
 @page "/login"
 @inject HttpClient Http
 @inject NavigationManager Navigation
+@inject CarWashStation.Client.Services.AdminSession Session
 @using CarWashStation.Models
 
 <PageTitle>Admin Login</PageTitle>
@@ -19,21 +20,56 @@
             <label class="remember"><InputCheckbox @bind-Value="model.RememberMe" /> <span>Remember Me</span></label>
             <button class="login-button" type="submit" disabled="@submitting">@(submitting ? "Logging in…" : "Log In")</button>
         </EditForm>
-        @if (failed) { <p class="error" role="alert">Fel e-post eller lösenord.</p> }
+        @if (error is not null) { <p class="error" role="alert">@error</p> }
     </div>
 </section>
 
 @code {
     private LoginForm model = new();
-    private bool failed, showPassword, submitting;
+    private bool showPassword, submitting;
+    private string? error;
     private void TogglePassword() => showPassword = !showPassword;
     private async Task SubmitLogin()
     {
+        if (submitting) return;
         submitting = true;
-        var response = await Http.PostAsJsonAsync("api/account/login", new LoginRequest(model.Email, model.Password, model.RememberMe));
-        failed = !response.IsSuccessStatusCode;
-        submitting = false;
-        if (!failed) Navigation.NavigateTo("admin", forceLoad: true);
+        error = null;
+        try
+        {
+            using var response = await Http.PostAsJsonAsync("api/account/login?useToken=true", new LoginRequest(model.Email, model.Password, model.RememberMe));
+            if (!response.IsSuccessStatusCode)
+            {
+                error = response.StatusCode == System.Net.HttpStatusCode.Unauthorized
+                    ? "Fel e-post eller lösenord."
+                    : "Inloggningen kunde inte slutföras. Försök igen.";
+                return;
+            }
+            var result = await response.Content.ReadFromJsonAsync<TokenResponse>();
+            if (string.IsNullOrWhiteSpace(result?.AccessToken))
+            {
+                error = "Inloggningen kunde inte slutföras. Försök igen senare.";
+                return;
+            }
+            await Session.SaveAsync(result.AccessToken, model.RememberMe);
+            using var status = await Http.GetAsync("api/account/status");
+            if (!status.IsSuccessStatusCode)
+            {
+                await Session.ClearAsync();
+                error = "Sessionen kunde inte startas. Försök logga in igen.";
+                return;
+            }
+            Navigation.NavigateTo("admin", forceLoad: true);
+        }
+        catch (Microsoft.JSInterop.JSException)
+        {
+            error = "Webbläsaren kunde inte spara sessionen. Tillåt webbplatsdata och försök igen.";
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
+        {
+            error = "Kunde inte ansluta. Kontrollera internetanslutningen och försök igen.";
+        }
+        finally { submitting = false; }
     }
+    private sealed record TokenResponse(string AccessToken);
     private sealed class LoginForm { public string Email { get; set; } = ""; public string Password { get; set; } = ""; public bool RememberMe { get; set; } }
 }
